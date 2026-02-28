@@ -1,0 +1,41 @@
+CihanAttorney.quantumkrd.com {
+    # Enable automatic HTTPS
+    encode gzip
+
+    # Handle API requests - proxy to backend
+    handle /api/* {
+        reverse_proxy localhost:5000
+    }
+
+    # Handle file uploads - proxy to backend
+    handle /uploads/* {
+        reverse_proxy localhost:5000
+    }
+
+    # Serve frontend static files
+    handle {
+        root * /var/www/lawyer-app/frontend
+        try_files {path} /index.html
+        file_server
+    }
+
+    # Security headers
+    header {
+        # Enable HSTS
+        Strict-Transport-Security "max-age=31536000; includeSubDomains; preload"
+        # Prevent MIME type sniffing
+        X-Content-Type-Options "nosniff"
+        # Enable XSS protection
+        X-XSS-Protection "1; mode=block"
+        # Clickjacking protection
+        X-Frame-Options "SAMEORIGIN"
+        # Referrer policy
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    # Logging
+    log {
+        output file /var/log/caddy/lawyer-app.log
+        format json
+    }
+}
