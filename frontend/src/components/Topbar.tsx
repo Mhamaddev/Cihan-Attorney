@@ -196,13 +196,13 @@ function Topbar({ toggleSidebar }: TopbarProps) {
           onClick={() => setShowUserMenu(!showUserMenu)}
           title="User Menu"
         >
-          <div style={{ 
-            width: '40px', 
-            height: '40px', 
-            borderRadius: '50%', 
-            background: 'var(--primary-color)', 
-            display: 'flex', 
-            alignItems: 'center', 
+          <div style={{
+            width: '40px',
+            height: '40px',
+            borderRadius: '50%',
+            background: 'linear-gradient(135deg, var(--primary-color), var(--primary-dark))',
+            display: 'flex',
+            alignItems: 'center',
             justifyContent: 'center',
             color: 'white',
             fontWeight: '600',

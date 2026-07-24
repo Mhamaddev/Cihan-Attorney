@@ -342,7 +342,8 @@ body {
   right: 0;
   height: var(--topbar-height);
   background: var(--bg-primary);
-  border-bottom: 1px solid var(--border-color);
+  border-bottom: none;
+  box-shadow: var(--shadow-sm);
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -448,8 +449,8 @@ body {
   right: 24px;
   width: 360px;
   background: var(--bg-primary);
-  border-radius: var(--border-radius);
-  box-shadow: 0 10px 25px var(--shadow-color);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-lg);
   border: 1px solid var(--border-color);
   z-index: 1001;
 }
