@@ -540,7 +540,7 @@ body {
   border: none;
   border-radius: var(--border-radius);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 600;
   cursor: pointer;
   transition: all 0.2s;
   text-decoration: none;
@@ -548,12 +548,14 @@ body {
 }
 
 .btn-primary {
-  background-color: var(--primary-color);
+  background: linear-gradient(135deg, var(--primary-color), var(--primary-dark));
   color: white;
+  box-shadow: 0 4px 12px rgba(61, 82, 40, 0.25);
 }
 
 .btn-primary:hover {
-  background-color: var(--primary-dark);
+  filter: brightness(1.08);
+  box-shadow: 0 6px 16px rgba(61, 82, 40, 0.32);
 }
 
 .btn-secondary {
@@ -572,7 +574,7 @@ body {
 }
 
 .btn-success:hover {
-  background-color: #059669;
+  filter: brightness(0.9);
 }
 
 .btn-danger {
@@ -581,7 +583,7 @@ body {
 }
 
 .btn-danger:hover {
-  background-color: #dc2626;
+  filter: brightness(0.9);
 }
 
 .btn-sm {
@@ -589,11 +591,65 @@ body {
   font-size: 12px;
 }
 
+/* Icon Buttons */
+.btn-icon {
+  width: 34px;
+  height: 34px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s;
+  text-decoration: none;
+}
+
+.btn-icon-view {
+  background: var(--info-tint);
+  color: var(--info-color);
+}
+
+.btn-icon-view:hover {
+  background: var(--info-color);
+  color: white;
+}
+
+.btn-icon-edit {
+  background: var(--primary-tint);
+  color: var(--primary-color);
+}
+
+.btn-icon-edit:hover {
+  background: var(--primary-color);
+  color: white;
+}
+
+.btn-icon-password {
+  background: var(--success-tint);
+  color: var(--secondary-color);
+}
+
+.btn-icon-password:hover {
+  background: var(--secondary-color);
+  color: white;
+}
+
+.btn-icon-delete {
+  background: var(--danger-tint);
+  color: var(--danger-color);
+}
+
+.btn-icon-delete:hover {
+  background: var(--danger-color);
+  color: white;
+}
+
 /* Cards */
 .card {
-  background: var(--bg-primary);
-  border-radius: var(--border-radius);
-  box-shadow: 0 1px 3px var(--shadow-color);
+  background: var(--card-bg);
+  border-radius: var(--card-radius);
+  box-shadow: var(--shadow-sm);
   padding: 20px;
   margin-bottom: 20px;
   border: 1px solid var(--border-color);
@@ -601,7 +657,7 @@ body {
 }
 
 .card:hover {
-  box-shadow: 0 4px 6px var(--shadow-color);
+  box-shadow: var(--shadow-md);
 }
 
 .card-header {
@@ -622,23 +678,24 @@ body {
 
 /* Forms */
 .form-group {
-  margin-bottom: 20px;
+  margin-bottom: 22px;
 }
 
 .form-group label {
   display: block;
   margin-bottom: 8px;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--text-secondary);
+  font-size: 14px;
 }
 
 .form-control {
   width: 100%;
-  padding: 10px 12px;
-  border: 1px solid var(--border-color);
+  padding: 12px 14px;
+  border: 1.5px solid var(--border-color);
   border-radius: var(--border-radius);
   font-size: 14px;
-  transition: border-color 0.2s;
+  transition: border-color 0.2s, box-shadow 0.2s;
   background-color: var(--bg-primary);
   color: var(--text-primary);
 }
@@ -646,7 +703,7 @@ body {
 .form-control:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(104, 167, 177, 0.2);
+  box-shadow: 0 0 0 3px var(--primary-tint);
 }
 
 textarea.form-control {
@@ -680,7 +737,7 @@ select.form-control {
 
 .table th,
 .table td {
-  padding: 12px;
+  padding: 16px 12px;
   text-align: left;
   border-bottom: 1px solid var(--border-color);
 }
@@ -689,11 +746,17 @@ select.form-control {
   background-color: var(--bg-tertiary);
   font-weight: 600;
   color: var(--text-secondary);
-  font-size: 14px;
+  font-size: 13px;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.table tbody tr {
+  transition: background-color 0.15s;
 }
 
 .table tbody tr:hover {
-  background-color: var(--bg-tertiary);
+  background-color: var(--primary-tint);
 }
 
 /* Badge */
@@ -702,27 +765,27 @@ select.form-control {
   padding: 4px 12px;
   border-radius: 12px;
   font-size: 12px;
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .badge-success {
-  background-color: #d1fae5;
-  color: #065f46;
+  background-color: var(--success-tint);
+  color: var(--secondary-color);
 }
 
 .badge-warning {
-  background-color: #fed7aa;
-  color: #92400e;
+  background-color: var(--warning-tint);
+  color: var(--warning-color);
 }
 
 .badge-danger {
-  background-color: #fee2e2;
-  color: #991b1b;
+  background-color: var(--danger-tint);
+  color: var(--danger-color);
 }
 
 .badge-info {
-  background-color: #dbeafe;
-  color: #1e40af;
+  background-color: var(--info-tint);
+  color: var(--info-color);
 }
 
 /* Loading */
