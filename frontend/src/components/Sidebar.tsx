@@ -45,7 +45,7 @@ function Sidebar({ isOpen, toggleSidebar, isCollapsed, toggleCollapse }: Sidebar
       <aside className={`sidebar ${isOpen ? 'sidebar-open' : ''} ${isCollapsed ? 'sidebar-collapsed' : ''}`}>
         <div className="sidebar-header">
           <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
-            <ScaleIcon style={{ width: '28px', height: '28px', color: 'var(--primary-color)' }} />
+            <ScaleIcon style={{ width: '28px', height: '28px', color: 'var(--accent-gold)' }} />
             {!isCollapsed && <h2 className="sidebar-title">{t.system?.name || 'Cihan Attorney'}</h2>}
           </div>
           <button 
@@ -144,9 +144,9 @@ function Sidebar({ isOpen, toggleSidebar, isCollapsed, toggleCollapse }: Sidebar
 
         <div className="sidebar-footer">
           <div className="sidebar-user">
-            <UserCircleIcon 
-              className="sidebar-user-avatar" 
-              style={{ width: '40px', height: '40px', color: 'var(--primary-color)' }} 
+            <UserCircleIcon
+              className="sidebar-user-avatar"
+              style={{ width: '40px', height: '40px', color: 'var(--accent-gold)' }}
               title={isCollapsed ? 'Law Office' : ''}
             />
             {!isCollapsed && (
