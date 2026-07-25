@@ -50,7 +50,7 @@ function Login() {
         display: 'flex',
         alignItems: 'center',
         justifyContent: 'center',
-        background: 'var(--bg-secondary)',
+        background: 'radial-gradient(circle at 30% 20%, #4a6034 0%, #263317 70%)',
         padding: '20px',
       }}
     >
@@ -60,6 +60,9 @@ function Login() {
           maxWidth: '420px',
           width: '100%',
           padding: '40px',
+          borderRadius: 'var(--radius-lg)',
+          boxShadow: '0 20px 40px rgba(0, 0, 0, 0.25)',
+          border: 'none',
         }}
       >
         {/* Logo & Title */}
