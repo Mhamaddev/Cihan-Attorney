@@ -204,7 +204,7 @@ function UserManagement() {
           <h1>User Management</h1>
           <p className="page-subtitle">Manage system users and their roles</p>
         </div>
-        <button className="btn-primary" onClick={() => handleOpenModal()}>
+        <button className="btn btn-primary" onClick={() => handleOpenModal()}>
           <PlusIcon style={{ width: '20px', height: '20px' }} />
           Add User
         </button>
@@ -415,10 +415,10 @@ function UserManagement() {
               </div>
 
               <div className="modal-actions">
-                <button type="button" className="btn-secondary" onClick={handleCloseModal}>
+                <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
                   Cancel
                 </button>
-                <button type="submit" className="btn-primary">
+                <button type="submit" className="btn btn-primary">
                   {editingUser ? 'Update User' : 'Create User'}
                 </button>
               </div>
@@ -444,10 +444,10 @@ function UserManagement() {
             </p>
 
             <div className="modal-actions">
-              <button className="btn-secondary" onClick={() => setShowDeleteConfirm(false)}>
+              <button className="btn btn-secondary" onClick={() => setShowDeleteConfirm(false)}>
                 Cancel
               </button>
-              <button className="btn-danger" onClick={handleDeleteConfirm}>
+              <button className="btn btn-danger" onClick={handleDeleteConfirm}>
                 Delete User
               </button>
             </div>
@@ -491,10 +491,10 @@ function UserManagement() {
               </div>
 
               <div className="modal-actions">
-                <button type="button" className="btn-secondary" onClick={() => setShowPasswordModal(false)}>
+                <button type="button" className="btn btn-secondary" onClick={() => setShowPasswordModal(false)}>
                   Cancel
                 </button>
-                <button type="submit" className="btn-primary">
+                <button type="submit" className="btn btn-primary">
                   Reset Password
                 </button>
               </div>
