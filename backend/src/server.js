@@ -7,6 +7,7 @@ import createTables from './config/initDatabase.js';
 import caseRoutes from './routes/caseRoutes.js';
 import authRoutes from './routes/authRoutes.js';
 import userRoutes from './routes/userRoutes.js';
+import todoRoutes from './routes/todoRoutes.js';
 
 dotenv.config();
 
@@ -35,6 +36,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 app.use('/api/auth', authRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/cases', caseRoutes);
+app.use('/api/todos', todoRoutes);
 
 // Health check endpoint
 app.get('/api/health', (req, res) => {
