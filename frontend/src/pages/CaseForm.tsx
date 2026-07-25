@@ -96,10 +96,10 @@ function CaseForm() {
   return (
     <div>
       <div style={{ marginBottom: '24px' }}>
-        <h2 style={{ margin: 0, fontSize: '28px', fontWeight: '700', color: 'var(--gray-900)' }}>
+        <h2 style={{ margin: 0, fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)' }}>
           {isEditMode ? 'Edit Case' : 'Add New Case'}
         </h2>
-        <p style={{ margin: '8px 0 0 0', color: 'var(--gray-600)' }}>
+        <p style={{ margin: '8px 0 0 0', color: 'var(--text-tertiary)' }}>
           {isEditMode ? 'Update case information and details' : 'Create a new case with applicant and defendant information'}
         </p>
       </div>
@@ -154,7 +154,7 @@ function CaseForm() {
             </div>
 
             {/* Applicant Info */}
-            <div className="card" style={{ marginTop: '20px', background: '#f9fafb' }}>
+            <div className="card" style={{ marginTop: '20px', background: 'var(--bg-tertiary)' }}>
               <h3 style={{ marginBottom: '15px', fontSize: '18px' }}>Applicant Information</h3>
               <div className="grid grid-cols-2">
                 <div className="form-group">
@@ -188,7 +188,7 @@ function CaseForm() {
             </div>
 
             {/* Wanted Info */}
-            <div className="card" style={{ marginTop: '20px', background: '#f9fafb' }}>
+            <div className="card" style={{ marginTop: '20px', background: 'var(--bg-tertiary)' }}>
               <h3 style={{ marginBottom: '15px', fontSize: '18px' }}>Wanted/Defendant Information</h3>
               <div className="grid grid-cols-2">
                 <div className="form-group">

@@ -134,10 +134,10 @@ function CaseDetail() {
       <div style={{ marginBottom: '24px' }}>
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
           <div>
-            <h2 style={{ margin: 0, fontSize: '28px', fontWeight: '700', color: 'var(--gray-900)' }}>
+            <h2 style={{ margin: 0, fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)' }}>
               Case #{caseData.id} - {caseData.request_type}
             </h2>
-            <p style={{ margin: '8px 0 0 0', color: 'var(--gray-600)' }}>
+            <p style={{ margin: '8px 0 0 0', color: 'var(--text-tertiary)' }}>
               Created: {caseData.created_at ? new Date(caseData.created_at).toLocaleString() : 'N/A'}
             </p>
           </div>
@@ -201,7 +201,7 @@ function CaseDetail() {
               <div><strong>Address:</strong> {caseData.applicants[0].address || 'N/A'}</div>
             </div>
           ) : (
-            <p style={{ color: '#6b7280' }}>No applicant information</p>
+            <p style={{ color: 'var(--text-tertiary)' }}>No applicant information</p>
           )}
         </div>
 
@@ -214,7 +214,7 @@ function CaseDetail() {
               <div><strong>Address:</strong> {caseData.wanted[0].address || 'N/A'}</div>
             </div>
           ) : (
-            <p style={{ color: '#6b7280' }}>No wanted information</p>
+            <p style={{ color: 'var(--text-tertiary)' }}>No wanted information</p>
           )}
         </div>
       </div>
@@ -232,7 +232,7 @@ function CaseDetail() {
         </div>
 
         {showCourtDateForm && (
-          <form onSubmit={handleAddCourtDate} className="card" style={{ background: '#f9fafb', marginBottom: '20px' }}>
+          <form onSubmit={handleAddCourtDate} className="card" style={{ background: 'var(--bg-tertiary)', marginBottom: '20px' }}>
             <div className="grid grid-cols-2">
               <div className="form-group">
                 <label>Interview Date *</label>
@@ -294,7 +294,7 @@ function CaseDetail() {
             </tbody>
           </table>
         ) : (
-          <p style={{ color: '#6b7280', textAlign: 'center', padding: '20px' }}>No court dates scheduled</p>
+          <p style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: '20px' }}>No court dates scheduled</p>
         )}
       </div>
 
@@ -311,7 +311,7 @@ function CaseDetail() {
         </div>
 
         {showExpenseForm && (
-          <form onSubmit={handleAddExpense} className="card" style={{ background: '#f9fafb', marginBottom: '20px' }}>
+          <form onSubmit={handleAddExpense} className="card" style={{ background: 'var(--bg-tertiary)', marginBottom: '20px' }}>
             <div className="grid grid-cols-2">
               <div className="form-group">
                 <label>Expense Name *</label>
@@ -398,7 +398,7 @@ function CaseDetail() {
             </tbody>
           </table>
         ) : (
-          <p style={{ color: '#6b7280', textAlign: 'center', padding: '20px' }}>No expenses recorded</p>
+          <p style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: '20px' }}>No expenses recorded</p>
         )}
       </div>
 
@@ -415,7 +415,7 @@ function CaseDetail() {
         </div>
 
         {showFileUpload && (
-          <form onSubmit={handleFileUpload} className="card" style={{ background: '#f9fafb', marginBottom: '20px' }}>
+          <form onSubmit={handleFileUpload} className="card" style={{ background: 'var(--bg-tertiary)', marginBottom: '20px' }}>
             <div className="grid grid-cols-2">
               <div className="form-group">
                 <label>File *</label>
@@ -500,7 +500,7 @@ function CaseDetail() {
             </tbody>
           </table>
         ) : (
-          <p style={{ color: '#6b7280', textAlign: 'center', padding: '20px' }}>No files uploaded</p>
+          <p style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: '20px' }}>No files uploaded</p>
         )}
       </div>
     </div>
