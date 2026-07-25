@@ -101,48 +101,6 @@
   gap: 8px;
 }
 
-.btn-icon {
-  width: 36px;
-  height: 36px;
-  border: none;
-  border-radius: 6px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s;
-}
-
-.btn-edit {
-  background: #f0f9ff;
-  color: #0284c7;
-}
-
-.btn-edit:hover {
-  background: #0284c7;
-  color: white;
-}
-
-.btn-password {
-  background: #f0fdf4;
-  color: #10b981;
-}
-
-.btn-password:hover {
-  background: #10b981;
-  color: white;
-}
-
-.btn-delete {
-  background: #fef2f2;
-  color: #dc2626;
-}
-
-.btn-delete:hover {
-  background: #dc2626;
-  color: white;
-}
-
 /* Primary Button */
 .btn-primary {
   background: var(--primary-color);
@@ -309,7 +267,7 @@ form {
 .form-group select:focus {
   outline: none;
   border-color: var(--primary-color);
-  box-shadow: 0 0 0 3px rgba(104, 167, 177, 0.1);
+  box-shadow: 0 0 0 3px var(--primary-tint);
 }
 
 .form-group input:disabled {
@@ -331,37 +289,6 @@ form {
   padding: 20px 24px;
   border-top: 1px solid var(--border-color);
   margin: 0 -24px -24px;
-}
-
-/* Dark Mode Adjustments */
-[data-theme="dark"] .btn-edit {
-  background: #0c4a6e;
-  color: #7dd3fc;
-}
-
-[data-theme="dark"] .btn-edit:hover {
-  background: #0284c7;
-  color: white;
-}
-
-[data-theme="dark"] .btn-password {
-  background: #064e3b;
-  color: #6ee7b7;
-}
-
-[data-theme="dark"] .btn-password:hover {
-  background: #10b981;
-  color: white;
-}
-
-[data-theme="dark"] .btn-delete {
-  background: #7f1d1d;
-  color: #fca5a5;
-}
-
-[data-theme="dark"] .btn-delete:hover {
-  background: #dc2626;
-  color: white;
 }
 
 /* Responsive Design */

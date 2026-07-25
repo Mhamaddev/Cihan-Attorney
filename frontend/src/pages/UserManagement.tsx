@@ -181,11 +181,11 @@ function UserManagement() {
       case 'admin':
         return 'var(--primary-color)';
       case 'lawyer':
-        return '#10b981';
+        return 'var(--secondary-color)';
       case 'staff':
-        return '#6b7280';
+        return 'var(--text-tertiary)';
       default:
-        return '#6b7280';
+        return 'var(--text-tertiary)';
     }
   };
 
@@ -284,21 +284,21 @@ function UserManagement() {
                 <td>
                   <div className="action-buttons">
                     <button
-                      className="btn-icon btn-edit"
+                      className="btn-icon btn-icon-edit"
                       onClick={() => handleOpenModal(user)}
                       title="Edit User"
                     >
                       <PencilIcon style={{ width: '18px', height: '18px' }} />
                     </button>
                     <button
-                      className="btn-icon btn-password"
+                      className="btn-icon btn-icon-password"
                       onClick={() => handlePasswordResetClick(user)}
                       title="Reset Password"
                     >
                       <KeyIcon style={{ width: '18px', height: '18px' }} />
                     </button>
                     <button
-                      className="btn-icon btn-delete"
+                      className="btn-icon btn-icon-delete"
                       onClick={() => handleDeleteClick(user)}
                       title="Delete User"
                     >
