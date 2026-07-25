@@ -25,7 +25,7 @@ class Todo {
       FROM todos t
       LEFT JOIN cases c ON t.case_id = c.id
       WHERE t.user_id = $1
-      ORDER BY t.due_date ASC NULLS LAST, t.created_at DESC
+      ORDER BY t.due_date ASC NULLS LAST, t.created_at DESC, t.id DESC
     `;
     const result = await pool.query(query, [userId]);
     return result.rows;

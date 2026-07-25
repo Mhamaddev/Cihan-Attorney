@@ -36,9 +36,9 @@ function TodoList() {
     loadCases();
   }, []);
 
-  const loadTodos = async () => {
+  const loadTodos = async (showSpinner = true) => {
     try {
-      setLoading(true);
+      if (showSpinner) setLoading(true);
       const data = await getTodos();
       setTodos(data);
       setError('');
@@ -46,7 +46,7 @@ function TodoList() {
       setError(t.todos.loadError);
       console.error(err);
     } finally {
-      setLoading(false);
+      if (showSpinner) setLoading(false);
     }
   };
 
@@ -77,8 +77,9 @@ function TodoList() {
       setNewCaseId('');
       setError('');
       // Refetch so the new item lands in its correct sorted position and
-      // picks up the joined case name.
-      await loadTodos();
+      // picks up the joined case name. Suppress the spinner: the header, add
+      // form, and existing list must stay mounted through this refetch.
+      await loadTodos(false);
     } catch (err) {
       setError(t.todos.saveError);
       console.error(err);
@@ -198,6 +199,7 @@ function TodoList() {
                   type="checkbox"
                   checked={todo.is_completed}
                   onChange={() => handleToggle(todo)}
+                  aria-label={todo.title}
                   style={{ width: '18px', height: '18px', flexShrink: 0, cursor: 'pointer' }}
                 />
 
@@ -226,15 +228,17 @@ function TodoList() {
 
                 {todo.due_date && (
                   <span
-                    className="badge"
+                    className={`badge ${isOverdue(todo) ? 'badge-danger' : ''}`}
                     style={{
                       flexShrink: 0,
-                      backgroundColor: isOverdue(todo) ? 'var(--danger-tint)' : 'var(--bg-tertiary)',
-                      color: isOverdue(todo) ? 'var(--danger-color)' : 'var(--text-secondary)',
+                      ...(isOverdue(todo)
+                        ? {}
+                        : { backgroundColor: 'var(--bg-tertiary)', color: 'var(--text-secondary)' }),
                     }}
                     title={isOverdue(todo) ? t.todos.overdue : ''}
                   >
                     {todo.due_date}
+                    {isOverdue(todo) ? ` · ${t.todos.overdue}` : ''}
                   </span>
                 )}
 
