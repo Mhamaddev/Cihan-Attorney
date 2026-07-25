@@ -8,7 +8,8 @@ import {
   ScaleIcon,
   UserCircleIcon,
   ChevronLeftIcon,
-  UsersIcon
+  UsersIcon,
+  ClipboardDocumentCheckIcon
 } from '@heroicons/react/24/outline';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useAuth } from '../contexts/AuthContext';
@@ -94,6 +95,15 @@ function Sidebar({ isOpen, toggleSidebar, isCollapsed, toggleCollapse }: Sidebar
             >
               <PlusCircleIcon className="sidebar-icon" style={{ width: '20px', height: '20px' }} />
               {!isCollapsed && <span>{t.nav.newCase}</span>}
+            </Link>
+            <Link
+              to="/todos"
+              className={`sidebar-link ${isActive('/todos') ? 'sidebar-link-active' : ''}`}
+              onClick={() => window.innerWidth < 768 && toggleSidebar()}
+              title={isCollapsed ? t.nav.todos : ''}
+            >
+              <ClipboardDocumentCheckIcon className="sidebar-icon" style={{ width: '20px', height: '20px' }} />
+              {!isCollapsed && <span>{t.nav.todos}</span>}
             </Link>
           </div>
 

@@ -9,6 +9,7 @@ import CaseDetail from './pages/CaseDetail';
 import CaseForm from './pages/CaseForm';
 import Login from './pages/Login';
 import UserManagement from './pages/UserManagement';
+import TodoList from './pages/TodoList';
 import { useAuth } from './contexts/AuthContext';
 import './index.css';
 
@@ -64,7 +65,8 @@ function App() {
                       <Route path="/cases/new" element={<CaseForm />} />
                       <Route path="/cases/:id" element={<CaseDetail />} />
                       <Route path="/cases/:id/edit" element={<CaseForm />} />
-                      <Route 
+                      <Route path="/todos" element={<TodoList />} />
+                      <Route
                         path="/users" 
                         element={
                           <ProtectedRoute requireAdmin={true}>
