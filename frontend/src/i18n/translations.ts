@@ -26,8 +26,30 @@ export const translations = {
       pendingCases: 'Pending Cases',
       courtCases: 'Court Cases',
       users: 'User Management',
+      todos: 'Todo List',
     },
-    
+
+    // Todo List
+    todos: {
+      title: 'Todo List',
+      subtitle: 'Your personal task list',
+      addPlaceholder: 'What needs to be done?',
+      dueDate: 'Due date',
+      noCase: 'No case',
+      add: 'Add',
+      adding: 'Adding...',
+      openCount: '{count} open',
+      empty: 'No todos yet',
+      emptyHint: 'Add your first task above',
+      loading: 'Loading todos...',
+      overdue: 'Overdue',
+      delete: 'Delete',
+      loadError: 'Failed to load todos',
+      saveError: 'Failed to save todo',
+      deleteError: 'Failed to delete todo',
+      confirmDelete: 'Delete this todo?',
+    },
+
     // Dashboard
     dashboard: {
       title: 'Dashboard',
@@ -244,8 +266,30 @@ export const translations = {
       pendingCases: 'کەیسە چاوەڕوانکراوەکان',
       courtCases: 'کەیسەکانی دادگا',
       users: 'بەڕێوەبردنی بەکارهێنەران',
+      todos: 'لیستی کارەکان',
     },
-    
+
+    // Todo List
+    todos: {
+      title: 'لیستی کارەکان',
+      subtitle: 'لیستی کارە کەسییەکانت',
+      addPlaceholder: 'چی پێویستە بکرێت؟',
+      dueDate: 'بەرواری کۆتایی',
+      noCase: 'هیچ کەیسێک',
+      add: 'زیادکردن',
+      adding: 'زیاد دەکرێت...',
+      openCount: '{count} کراوە',
+      empty: 'هێشتا هیچ کارێک نییە',
+      emptyHint: 'یەکەم کارت لە سەرەوە زیاد بکە',
+      loading: 'کارەکان بار دەکرێن...',
+      overdue: 'دواکەوتوو',
+      delete: 'سڕینەوە',
+      loadError: 'بارکردنی کارەکان سەرکەوتوو نەبوو',
+      saveError: 'پاشەکەوتکردنی کار سەرکەوتوو نەبوو',
+      deleteError: 'سڕینەوەی کار سەرکەوتوو نەبوو',
+      confirmDelete: 'ئەم کارە بسڕدرێتەوە؟',
+    },
+
     // Dashboard
     dashboard: {
       title: 'داشبۆرد',
@@ -462,8 +506,30 @@ export const translations = {
       pendingCases: 'القضايا المعلقة',
       courtCases: 'قضايا المحكمة',
       users: 'إدارة المستخدمين',
+      todos: 'قائمة المهام',
     },
-    
+
+    // Todo List
+    todos: {
+      title: 'قائمة المهام',
+      subtitle: 'قائمة مهامك الشخصية',
+      addPlaceholder: 'ما الذي يجب إنجازه؟',
+      dueDate: 'تاريخ الاستحقاق',
+      noCase: 'بدون قضية',
+      add: 'إضافة',
+      adding: 'جارٍ الإضافة...',
+      openCount: '{count} مفتوحة',
+      empty: 'لا توجد مهام بعد',
+      emptyHint: 'أضف مهمتك الأولى في الأعلى',
+      loading: 'جارٍ تحميل المهام...',
+      overdue: 'متأخرة',
+      delete: 'حذف',
+      loadError: 'فشل تحميل المهام',
+      saveError: 'فشل حفظ المهمة',
+      deleteError: 'فشل حذف المهمة',
+      confirmDelete: 'هل تريد حذف هذه المهمة؟',
+    },
+
     // Dashboard
     dashboard: {
       title: 'لوحة التحكم',
