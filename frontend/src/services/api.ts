@@ -1,4 +1,4 @@
-import type { Case, CreateCaseData, CourtDate, Expense, CaseFile } from '../types';
+import type { Case, CreateCaseData, CourtDate, Expense, CaseFile, Todo, CreateTodoData, UpdateTodoData } from '../types';
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
@@ -249,5 +249,66 @@ export const deleteFile = async (caseId: string | number, fileId: string | numbe
     method: 'DELETE',
   });
   if (!response.ok) throw new Error('Failed to delete file');
+  return response.json();
+};
+
+// Todos
+export const getTodos = async (): Promise<Todo[]> => {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${API_URL}/todos`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!response.ok) throw new Error('Failed to fetch todos');
+  return response.json();
+};
+
+export const createTodo = async (todoData: CreateTodoData): Promise<Todo> => {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${API_URL}/todos`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(todoData),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to create todo');
+  }
+  return response.json();
+};
+
+export const updateTodo = async (id: number, todoData: UpdateTodoData): Promise<Todo> => {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${API_URL}/todos/${id}`, {
+    method: 'PUT',
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
+    body: JSON.stringify(todoData),
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to update todo');
+  }
+  return response.json();
+};
+
+export const deleteTodo = async (id: number): Promise<void> => {
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${API_URL}/todos/${id}`, {
+    method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
+  if (!response.ok) {
+    const error = await response.json();
+    throw new Error(error.message || 'Failed to delete todo');
+  }
   return response.json();
 };

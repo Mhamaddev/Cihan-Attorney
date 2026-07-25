@@ -67,3 +67,29 @@ export interface CreateCaseData {
   court_dates?: CourtDate[];
   expenses?: Expense[];
 }
+
+export interface Todo {
+  id: number;
+  user_id: number;
+  case_id: number | null;
+  title: string;
+  due_date: string | null;
+  is_completed: boolean;
+  created_at: string;
+  updated_at: string;
+  // Present only on list responses, which join the case for display.
+  case_request_type?: string | null;
+}
+
+export interface CreateTodoData {
+  title: string;
+  due_date?: string | null;
+  case_id?: number | null;
+}
+
+export interface UpdateTodoData {
+  title?: string;
+  due_date?: string | null;
+  case_id?: number | null;
+  is_completed?: boolean;
+}
