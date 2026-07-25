@@ -2,7 +2,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { Link } from 'react-router-dom';
 import { getAllCases, deleteCase } from '../services/api';
 import type { Case } from '../types';
-import { MagnifyingGlassIcon, FunnelIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { MagnifyingGlassIcon, FunnelIcon, XMarkIcon, EyeIcon, PencilIcon, TrashIcon } from '@heroicons/react/24/outline';
 import { useLanguage } from '../i18n/LanguageContext';
 
 function CaseList() {
@@ -128,8 +128,8 @@ function CaseList() {
               style={{
                 width: '100%',
                 padding: '10px 12px 10px 40px',
-                border: '1px solid var(--gray-300)',
-                borderRadius: '8px',
+                border: '1.5px solid var(--border-color)',
+                borderRadius: 'var(--border-radius)',
                 fontSize: '14px'
               }}
             />
@@ -312,17 +312,18 @@ function CaseList() {
                     <td>{caseItem.created_at ? new Date(caseItem.created_at).toLocaleDateString() : 'N/A'}</td>
                     <td>
                       <div className="flex gap-10">
-                        <Link to={`/cases/${caseItem.id}`} className="btn btn-sm btn-primary">
-                          {t.casesList.view}
+                        <Link to={`/cases/${caseItem.id}`} className="btn-icon btn-icon-view" title={t.casesList.view}>
+                          <EyeIcon style={{ width: '16px', height: '16px' }} />
                         </Link>
-                        <Link to={`/cases/${caseItem.id}/edit`} className="btn btn-sm btn-secondary">
-                          {t.casesList.edit}
+                        <Link to={`/cases/${caseItem.id}/edit`} className="btn-icon btn-icon-edit" title={t.casesList.edit}>
+                          <PencilIcon style={{ width: '16px', height: '16px' }} />
                         </Link>
                         <button
                           onClick={() => caseItem.id && handleDelete(caseItem.id)}
-                          className="btn btn-sm btn-danger"
+                          className="btn-icon btn-icon-delete"
+                          title={t.casesList.delete}
                         >
-                          {t.casesList.delete}
+                          <TrashIcon style={{ width: '16px', height: '16px' }} />
                         </button>
                       </div>
                     </td>
