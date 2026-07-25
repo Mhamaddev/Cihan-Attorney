@@ -94,6 +94,20 @@ const createTables = async () => {
       )
     `);
 
+    // Todos table (per-user private task list)
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS todos (
+        id SERIAL PRIMARY KEY,
+        user_id INTEGER NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        case_id INTEGER REFERENCES cases(id) ON DELETE SET NULL,
+        title VARCHAR(255) NOT NULL,
+        due_date DATE,
+        is_completed BOOLEAN DEFAULT FALSE,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
     // Insert default admin user (password: admin123)
     // Password hash for 'admin123' using bcrypt
     await client.query(`
@@ -112,6 +126,7 @@ const createTables = async () => {
       CREATE INDEX IF NOT EXISTS idx_case_files_case_id ON case_files(case_id);
       CREATE INDEX IF NOT EXISTS idx_users_username ON users(username);
       CREATE INDEX IF NOT EXISTS idx_users_email ON users(email);
+      CREATE INDEX IF NOT EXISTS idx_todos_user_id ON todos(user_id);
     `);
 
     await client.query('COMMIT');
