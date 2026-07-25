@@ -58,7 +58,7 @@ function Dashboard() {
       {/* Stats Grid */}
       <div className="grid grid-cols-3" style={{ marginBottom: '32px' }}>
         <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--primary-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: 'var(--border-radius)', background: 'var(--primary-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <FolderIcon style={{ width: '20px', height: '20px', color: 'var(--primary-color)' }} />
           </div>
           <div>
@@ -68,7 +68,7 @@ function Dashboard() {
         </div>
 
         <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--success-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: 'var(--border-radius)', background: 'var(--success-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <CheckCircleIcon style={{ width: '20px', height: '20px', color: 'var(--secondary-color)' }} />
           </div>
           <div>
@@ -78,7 +78,7 @@ function Dashboard() {
         </div>
 
         <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--warning-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: 'var(--border-radius)', background: 'var(--warning-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <ScaleIcon style={{ width: '20px', height: '20px', color: 'var(--warning-color)' }} />
           </div>
           <div>
@@ -91,7 +91,7 @@ function Dashboard() {
       {/* Secondary Stats */}
       <div className="grid grid-cols-3" style={{ marginBottom: '32px' }}>
         <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--success-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: 'var(--border-radius)', background: 'var(--success-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <CheckCircleIcon style={{ width: '20px', height: '20px', color: 'var(--secondary-color)' }} />
           </div>
           <div>
@@ -101,7 +101,7 @@ function Dashboard() {
         </div>
 
         <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--warning-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: 'var(--border-radius)', background: 'var(--warning-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <ClockIcon style={{ width: '20px', height: '20px', color: 'var(--warning-color)' }} />
           </div>
           <div>
@@ -111,7 +111,7 @@ function Dashboard() {
         </div>
 
         <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--danger-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: 'var(--border-radius)', background: 'var(--danger-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
             <XCircleIcon style={{ width: '20px', height: '20px', color: 'var(--danger-color)' }} />
           </div>
           <div>
