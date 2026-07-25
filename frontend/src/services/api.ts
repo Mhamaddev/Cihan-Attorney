@@ -153,21 +153,35 @@ export const changePassword = async (currentPassword: string, newPassword: strin
 
 // Cases
 export const getAllCases = async (): Promise<Case[]> => {
-  const response = await fetch(`${API_URL}/cases`);
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${API_URL}/cases`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
   if (!response.ok) throw new Error('Failed to fetch cases');
   return response.json();
 };
 
 export const getCaseById = async (id: string | number): Promise<Case> => {
-  const response = await fetch(`${API_URL}/cases/${id}`);
+  const token = localStorage.getItem('token');
+  const response = await fetch(`${API_URL}/cases/${id}`, {
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
+  });
   if (!response.ok) throw new Error('Failed to fetch case');
   return response.json();
 };
 
 export const createCase = async (caseData: CreateCaseData): Promise<Case> => {
+  const token = localStorage.getItem('token');
   const response = await fetch(`${API_URL}/cases`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
     body: JSON.stringify(caseData),
   });
   if (!response.ok) throw new Error('Failed to create case');
@@ -175,9 +189,13 @@ export const createCase = async (caseData: CreateCaseData): Promise<Case> => {
 };
 
 export const updateCase = async (id: string | number, caseData: Partial<CreateCaseData>): Promise<Case> => {
+  const token = localStorage.getItem('token');
   const response = await fetch(`${API_URL}/cases/${id}`, {
     method: 'PUT',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
     body: JSON.stringify(caseData),
   });
   if (!response.ok) throw new Error('Failed to update case');
@@ -185,8 +203,12 @@ export const updateCase = async (id: string | number, caseData: Partial<CreateCa
 };
 
 export const deleteCase = async (id: string | number): Promise<void> => {
+  const token = localStorage.getItem('token');
   const response = await fetch(`${API_URL}/cases/${id}`, {
     method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
   });
   if (!response.ok) throw new Error('Failed to delete case');
   return response.json();
@@ -194,9 +216,13 @@ export const deleteCase = async (id: string | number): Promise<void> => {
 
 // Court Dates
 export const addCourtDate = async (caseId: string | number, courtDate: Omit<CourtDate, 'id' | 'case_id' | 'created_at'>): Promise<CourtDate> => {
+  const token = localStorage.getItem('token');
   const response = await fetch(`${API_URL}/cases/${caseId}/court-dates`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
     body: JSON.stringify(courtDate),
   });
   if (!response.ok) throw new Error('Failed to add court date');
@@ -204,8 +230,12 @@ export const addCourtDate = async (caseId: string | number, courtDate: Omit<Cour
 };
 
 export const deleteCourtDate = async (caseId: string | number, courtDateId: string | number): Promise<void> => {
+  const token = localStorage.getItem('token');
   const response = await fetch(`${API_URL}/cases/${caseId}/court-dates/${courtDateId}`, {
     method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
   });
   if (!response.ok) throw new Error('Failed to delete court date');
   return response.json();
@@ -213,9 +243,13 @@ export const deleteCourtDate = async (caseId: string | number, courtDateId: stri
 
 // Expenses
 export const addExpense = async (caseId: string | number, expense: Omit<Expense, 'id' | 'case_id' | 'created_at'>): Promise<Expense> => {
+  const token = localStorage.getItem('token');
   const response = await fetch(`${API_URL}/cases/${caseId}/expenses`, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    },
     body: JSON.stringify(expense),
   });
   if (!response.ok) throw new Error('Failed to add expense');
@@ -223,8 +257,12 @@ export const addExpense = async (caseId: string | number, expense: Omit<Expense,
 };
 
 export const deleteExpense = async (caseId: string | number, expenseId: string | number): Promise<void> => {
+  const token = localStorage.getItem('token');
   const response = await fetch(`${API_URL}/cases/${caseId}/expenses/${expenseId}`, {
     method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
   });
   if (!response.ok) throw new Error('Failed to delete expense');
   return response.json();
@@ -236,8 +274,14 @@ export const uploadFile = async (caseId: string | number, file: File, category: 
   formData.append('file', file);
   formData.append('category', category);
 
+  const token = localStorage.getItem('token');
   const response = await fetch(`${API_URL}/cases/${caseId}/files`, {
     method: 'POST',
+    // Deliberately no Content-Type here: the browser must set it itself so it
+    // can include the multipart boundary. Setting it manually breaks the upload.
+    headers: {
+      'Authorization': `Bearer ${token}`
+    },
     body: formData,
   });
   if (!response.ok) throw new Error('Failed to upload file');
@@ -245,8 +289,12 @@ export const uploadFile = async (caseId: string | number, file: File, category: 
 };
 
 export const deleteFile = async (caseId: string | number, fileId: string | number): Promise<void> => {
+  const token = localStorage.getItem('token');
   const response = await fetch(`${API_URL}/cases/${caseId}/files/${fileId}`, {
     method: 'DELETE',
+    headers: {
+      'Authorization': `Bearer ${token}`
+    }
   });
   if (!response.ok) throw new Error('Failed to delete file');
   return response.json();

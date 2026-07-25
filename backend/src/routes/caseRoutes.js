@@ -13,8 +13,14 @@ import {
   deleteFile
 } from '../controllers/caseController.js';
 import upload from '../middleware/upload.js';
+import { authenticateToken } from '../middleware/authMiddleware.js';
 
 const router = express.Router();
+
+// All case routes require a valid token. Cases carry client PII (applicant
+// names, phone numbers, addresses) and link to uploaded documents, so none of
+// this is safe to serve anonymously. No role check: every role works cases.
+router.use(authenticateToken);
 
 // Case routes
 router.get('/', getAllCases);
