@@ -1,7 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
-import { getTodos } from '../services/api';
-import type { Todo } from '../types';
+import { TrashIcon } from '@heroicons/react/24/outline';
+import { getTodos, createTodo, updateTodo, deleteTodo, getAllCases } from '../services/api';
+import type { Todo, Case } from '../types';
 import { useLanguage } from '../i18n/LanguageContext';
 
 // Local calendar day as YYYY-MM-DD. Built from local date parts rather than
@@ -23,10 +24,16 @@ function TodoList() {
   const [todos, setTodos] = useState<Todo[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const [cases, setCases] = useState<Case[]>([]);
+  const [newTitle, setNewTitle] = useState('');
+  const [newDueDate, setNewDueDate] = useState('');
+  const [newCaseId, setNewCaseId] = useState('');
+  const [saving, setSaving] = useState(false);
   const { t } = useLanguage();
 
   useEffect(() => {
     loadTodos();
+    loadCases();
   }, []);
 
   const loadTodos = async () => {
@@ -40,6 +47,71 @@ function TodoList() {
       console.error(err);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const loadCases = async () => {
+    try {
+      const data = await getAllCases();
+      setCases(data);
+    } catch (err) {
+      // The case dropdown is optional; failing to load cases must not block
+      // the todo list itself, so this is logged rather than surfaced.
+      console.error(err);
+    }
+  };
+
+  const handleAdd = async (event: React.FormEvent) => {
+    event.preventDefault();
+    if (!newTitle.trim()) return;
+
+    try {
+      setSaving(true);
+      await createTodo({
+        title: newTitle.trim(),
+        due_date: newDueDate || null,
+        case_id: newCaseId ? Number(newCaseId) : null,
+      });
+      setNewTitle('');
+      setNewDueDate('');
+      setNewCaseId('');
+      setError('');
+      // Refetch so the new item lands in its correct sorted position and
+      // picks up the joined case name.
+      await loadTodos();
+    } catch (err) {
+      setError(t.todos.saveError);
+      console.error(err);
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const handleToggle = async (todo: Todo) => {
+    try {
+      const updated = await updateTodo(todo.id, { is_completed: !todo.is_completed });
+      // Patch in place rather than refetching: the row keeps its exact
+      // position, which is what "stay in place, struck through" means.
+      // Spreading over the existing item preserves case_request_type, which
+      // the update response does not include.
+      setTodos((prev) => prev.map((item) => (item.id === todo.id ? { ...item, ...updated } : item)));
+      setError('');
+    } catch (err) {
+      setError(t.todos.saveError);
+      console.error(err);
+    }
+  };
+
+  const handleDelete = async (todo: Todo) => {
+    if (!window.confirm(t.todos.confirmDelete)) return;
+
+    try {
+      await deleteTodo(todo.id);
+      setTodos((prev) => prev.filter((item) => item.id !== todo.id));
+      setError('');
+    } catch (err) {
+      setError(t.todos.deleteError);
+      console.error(err);
     }
   };
 
@@ -61,6 +133,43 @@ function TodoList() {
       </div>
 
       {error && <div className="alert alert-error">{error}</div>}
+
+      <form onSubmit={handleAdd} className="card" style={{ display: 'flex', gap: '12px', flexWrap: 'wrap', alignItems: 'center' }}>
+        <input
+          type="text"
+          className="form-control"
+          style={{ flex: '2 1 220px', width: 'auto' }}
+          placeholder={t.todos.addPlaceholder}
+          value={newTitle}
+          onChange={(e) => setNewTitle(e.target.value)}
+          maxLength={255}
+        />
+        <input
+          type="date"
+          className="form-control"
+          style={{ flex: '1 1 150px', width: 'auto' }}
+          aria-label={t.todos.dueDate}
+          value={newDueDate}
+          onChange={(e) => setNewDueDate(e.target.value)}
+        />
+        <select
+          className="form-control"
+          style={{ flex: '1 1 170px', width: 'auto' }}
+          aria-label={t.todos.noCase}
+          value={newCaseId}
+          onChange={(e) => setNewCaseId(e.target.value)}
+        >
+          <option value="">{t.todos.noCase}</option>
+          {cases.map((caseItem) => (
+            <option key={caseItem.id} value={caseItem.id}>
+              #{caseItem.id} — {caseItem.request_type}
+            </option>
+          ))}
+        </select>
+        <button type="submit" className="btn btn-primary" disabled={saving || !newTitle.trim()}>
+          {saving ? t.todos.adding : t.todos.add}
+        </button>
+      </form>
 
       <div className="card">
         {todos.length === 0 ? (
@@ -88,7 +197,7 @@ function TodoList() {
                 <input
                   type="checkbox"
                   checked={todo.is_completed}
-                  readOnly
+                  onChange={() => handleToggle(todo)}
                   style={{ width: '18px', height: '18px', flexShrink: 0, cursor: 'pointer' }}
                 />
 
@@ -128,6 +237,16 @@ function TodoList() {
                     {todo.due_date}
                   </span>
                 )}
+
+                <button
+                  type="button"
+                  className="btn-icon btn-icon-delete"
+                  onClick={() => handleDelete(todo)}
+                  title={t.todos.delete}
+                  style={{ flexShrink: 0 }}
+                >
+                  <TrashIcon style={{ width: '16px', height: '16px' }} />
+                </button>
               </li>
             ))}
           </ul>
