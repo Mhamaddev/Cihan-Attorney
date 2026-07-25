@@ -5,7 +5,9 @@ import type { Case } from '../types';
 import {
   CheckCircleIcon,
   ClockIcon,
-  XCircleIcon
+  XCircleIcon,
+  FolderIcon,
+  ScaleIcon
 } from '@heroicons/react/24/outline';
 import { useLanguage } from '../i18n/LanguageContext';
 
@@ -55,60 +57,66 @@ function Dashboard() {
 
       {/* Stats Grid */}
       <div className="grid grid-cols-3" style={{ marginBottom: '32px' }}>
-        <div className="card" style={{ background: 'linear-gradient(135deg, #4c5c30 0%, #3d4926 100%)', color: 'white', border: 'none', boxShadow: '0 4px 15px rgba(76, 92, 48, 0.3)' }}>
-          <div style={{ fontSize: '14px', opacity: 0.9, marginBottom: '8px' }}>{t.dashboard.totalCases}</div>
-          <div style={{ fontSize: '36px', fontWeight: '700' }}>{stats.total}</div>
-          <div style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }}>All registered cases</div>
+        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--primary-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <FolderIcon style={{ width: '20px', height: '20px', color: 'var(--primary-color)' }} />
+          </div>
+          <div>
+            <div style={{ fontSize: '10px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.4px', fontWeight: 600 }}>{t.dashboard.totalCases}</div>
+            <div style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)' }}>{stats.total}</div>
+          </div>
         </div>
 
-        <div className="card" style={{ background: 'linear-gradient(135deg, #4c5c30 0%, #3d4926 100%)', color: 'white', border: 'none', boxShadow: '0 4px 15px rgba(76, 92, 48, 0.3)' }}>
-          <div style={{ fontSize: '14px', opacity: 0.9, marginBottom: '8px' }}>{t.dashboard.activeStatus}</div>
-          <div style={{ fontSize: '36px', fontWeight: '700' }}>{stats.active}</div>
-          <div style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }}>Currently in progress</div>
+        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--success-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <CheckCircleIcon style={{ width: '20px', height: '20px', color: 'var(--secondary-color)' }} />
+          </div>
+          <div>
+            <div style={{ fontSize: '10px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.4px', fontWeight: 600 }}>{t.dashboard.activeStatus}</div>
+            <div style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)' }}>{stats.active}</div>
+          </div>
         </div>
 
-        <div className="card" style={{ background: 'linear-gradient(135deg, #4c5c30 0%, #3d4926 100%)', color: 'white', border: 'none', boxShadow: '0 4px 15px rgba(76, 92, 48, 0.3)' }}>
-          <div style={{ fontSize: '14px', opacity: 0.9, marginBottom: '8px' }}>Court Cases</div>
-          <div style={{ fontSize: '36px', fontWeight: '700' }}>{stats.court}</div>
-          <div style={{ fontSize: '12px', opacity: 0.8, marginTop: '8px' }}>Called for court</div>
+        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--warning-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <ScaleIcon style={{ width: '20px', height: '20px', color: 'var(--warning-color)' }} />
+          </div>
+          <div>
+            <div style={{ fontSize: '10px', color: 'var(--text-tertiary)', textTransform: 'uppercase', letterSpacing: '0.4px', fontWeight: 600 }}>Court Cases</div>
+            <div style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)' }}>{stats.court}</div>
+          </div>
         </div>
       </div>
 
       {/* Secondary Stats */}
       <div className="grid grid-cols-3" style={{ marginBottom: '32px' }}>
-        <div className="card">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'var(--secondary-color)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <CheckCircleIcon style={{ width: '28px', height: '28px' }} />
-            </div>
-            <div>
-              <div style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text-primary)' }}>{stats.active}</div>
-              <div style={{ fontSize: '14px', color: 'var(--text-tertiary)' }}>{t.casesList.active}</div>
-            </div>
+        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--success-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <CheckCircleIcon style={{ width: '20px', height: '20px', color: 'var(--secondary-color)' }} />
+          </div>
+          <div>
+            <div style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)' }}>{stats.active}</div>
+            <div style={{ fontSize: '13px', color: 'var(--text-tertiary)' }}>{t.casesList.active}</div>
           </div>
         </div>
 
-        <div className="card">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'var(--warning-color)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <ClockIcon style={{ width: '28px', height: '28px' }} />
-            </div>
-            <div>
-              <div style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text-primary)' }}>{stats.pending}</div>
-              <div style={{ fontSize: '14px', color: 'var(--text-tertiary)' }}>{t.casesList.pending}</div>
-            </div>
+        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--warning-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <ClockIcon style={{ width: '20px', height: '20px', color: 'var(--warning-color)' }} />
+          </div>
+          <div>
+            <div style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)' }}>{stats.pending}</div>
+            <div style={{ fontSize: '13px', color: 'var(--text-tertiary)' }}>{t.casesList.pending}</div>
           </div>
         </div>
 
-        <div className="card">
-          <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-            <div style={{ width: '48px', height: '48px', borderRadius: '12px', background: 'var(--danger-color)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <XCircleIcon style={{ width: '28px', height: '28px' }} />
-            </div>
-            <div>
-              <div style={{ fontSize: '24px', fontWeight: '700', color: 'var(--text-primary)' }}>{stats.closed}</div>
-              <div style={{ fontSize: '14px', color: 'var(--text-tertiary)' }}>{t.casesList.closed}</div>
-            </div>
+        <div className="card" style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+          <div style={{ width: '40px', height: '40px', borderRadius: '10px', background: 'var(--danger-tint)', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <XCircleIcon style={{ width: '20px', height: '20px', color: 'var(--danger-color)' }} />
+          </div>
+          <div>
+            <div style={{ fontSize: '22px', fontWeight: '800', color: 'var(--text-primary)' }}>{stats.closed}</div>
+            <div style={{ fontSize: '13px', color: 'var(--text-tertiary)' }}>{t.casesList.closed}</div>
           </div>
         </div>
       </div>
@@ -144,12 +152,15 @@ function Dashboard() {
                   onMouseEnter={(e) => e.currentTarget.style.borderColor = 'var(--primary-color)'}
                   onMouseLeave={(e) => e.currentTarget.style.borderColor = 'var(--border-color)'}
                 >
-                  <div>
-                    <div style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: '4px' }}>
-                      Case #{caseItem.id}
-                    </div>
-                    <div style={{ fontSize: '14px', color: 'var(--text-tertiary)' }}>
-                      {caseItem.request_type}
+                  <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
+                    <FolderIcon style={{ width: '16px', height: '16px', color: 'var(--text-tertiary)', flexShrink: 0 }} />
+                    <div>
+                      <div style={{ fontWeight: '600', color: 'var(--text-primary)', marginBottom: '4px' }}>
+                        Case #{caseItem.id}
+                      </div>
+                      <div style={{ fontSize: '14px', color: 'var(--text-tertiary)' }}>
+                        {caseItem.request_type}
+                      </div>
                     </div>
                   </div>
                   <span className={`badge ${
