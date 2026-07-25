@@ -157,6 +157,10 @@
 
 /* Form Styles */
 
+.user-management form {
+  padding: 24px;
+}
+
 .form-group input,
 .form-group select {
   width: 100%;
