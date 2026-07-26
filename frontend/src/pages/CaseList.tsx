@@ -111,10 +111,10 @@ function CaseList() {
         <div style={{ display: 'flex', gap: '12px', flexWrap: 'wrap' }}>
           {/* Search Input */}
           <div style={{ flex: '1', minWidth: '250px', position: 'relative' }}>
-            <MagnifyingGlassIcon style={{ 
-              position: 'absolute', 
-              left: '12px', 
-              top: '50%', 
+            <MagnifyingGlassIcon style={{
+              position: 'absolute',
+              insetInlineStart: '12px',
+              top: '50%',
               transform: 'translateY(-50%)', 
               width: '20px', 
               height: '20px', 
@@ -127,7 +127,9 @@ function CaseList() {
               onChange={(e) => setSearchQuery(e.target.value)}
               style={{
                 width: '100%',
-                padding: '10px 12px 10px 40px',
+                paddingBlock: '10px',
+                paddingInlineStart: '40px',
+                paddingInlineEnd: '12px',
                 border: '1.5px solid var(--border-color)',
                 borderRadius: 'var(--border-radius)',
                 fontSize: '14px'

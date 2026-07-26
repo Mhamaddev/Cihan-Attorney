@@ -4,7 +4,18 @@
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>frontend</title>
+
+    <!--
+      Preload only the two regular weights. They are discovered late otherwise
+      (the browser must parse the CSS before it sees @font-face), which shows a
+      flash of Tahoma on Arabic-script text. Heavier weights are rarer and can
+      wait. `crossorigin` is required even same-origin: fonts are always fetched
+      in CORS mode, and without it the preload is discarded and fetched twice.
+    -->
+    <link rel="preload" href="/fonts/poppins-400.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/bahij-400.woff2" as="font" type="font/woff2" crossorigin />
+
+    <title>Cihan Attorney</title>
   </head>
   <body>
     <div id="root"></div>

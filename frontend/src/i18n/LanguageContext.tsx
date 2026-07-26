@@ -1,4 +1,4 @@
-import { createContext, useContext, useState } from 'react';
+import { createContext, useContext, useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { translations } from './translations';
 import type { Language } from './translations';
@@ -9,6 +9,9 @@ interface LanguageContextType {
   t: typeof translations[Language];
 }
 
+/** Kurdish Sorani and Arabic are written right-to-left; English is not. */
+const RTL_LANGUAGES: Language[] = ['ku', 'ar'];
+
 const LanguageContext = createContext<LanguageContextType | undefined>(undefined);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
@@ -18,10 +21,17 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     return (saved as Language) || 'en';
   });
 
+  // Applied as an effect rather than only inside setLanguage, so a language
+  // restored from localStorage on a fresh page load still gets the right
+  // lang/dir instead of staying on the index.html defaults.
+  useEffect(() => {
+    document.documentElement.lang = language;
+    document.documentElement.dir = RTL_LANGUAGES.includes(language) ? 'rtl' : 'ltr';
+  }, [language]);
+
   const setLanguage = (lang: Language) => {
     setLanguageState(lang);
     localStorage.setItem('language', lang);
-    document.documentElement.lang = lang;
   };
 
   const value: LanguageContextType = {

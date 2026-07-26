@@ -130,7 +130,7 @@ function CaseForm() {
                     name="is_called_for_court"
                     checked={formData.is_called_for_court}
                     onChange={handleInputChange}
-                    style={{ marginRight: '8px' }}
+                    style={{ marginInlineEnd: '8px' }}
                   />
                   Called for Court
                 </label>

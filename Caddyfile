@@ -12,9 +12,37 @@ CihanAttorney.quantumkrd.com {
         reverse_proxy localhost:5000
     }
 
-    # Serve frontend static files
+    # Self-hosted fonts (Poppins + Bahij TheSansArabic).
+    #
+    # These get their own handler ahead of the SPA fallback on purpose: with
+    # `try_files {path} /index.html`, a missing .woff2 would be answered with
+    # index.html as HTTP 200 text/html. The browser rejects that as a font,
+    # silently falls back to a system face, and nothing errors anywhere -- so
+    # Arabic and Kurdish would just quietly render wrong. Here a missing file
+    # is a real 404 instead.
+    #
+    # Filenames are not content-hashed (they live in Vite's public/ dir), so
+    # cache for 30 days rather than `immutable`. To ship a changed font sooner,
+    # rename it (e.g. bahij-400.v2.woff2) and update index.css.
+    handle /fonts/* {
+        root * /var/www/lawyer-app/frontend
+        header Cache-Control "public, max-age=2592000"
+        file_server
+    }
+
+    # Vite content-hashes everything under /assets, so a given URL's contents
+    # can never change -- safe to cache permanently.
+    handle /assets/* {
+        root * /var/www/lawyer-app/frontend
+        header Cache-Control "public, max-age=31536000, immutable"
+        file_server
+    }
+
+    # SPA fallback. index.html must not be cached, or returning visitors keep
+    # booting the previous bundle after a deploy.
     handle {
         root * /var/www/lawyer-app/frontend
+        header Cache-Control "no-cache"
         try_files {path} /index.html
         file_server
     }

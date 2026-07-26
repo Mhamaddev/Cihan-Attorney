@@ -2,12 +2,6 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import {
   Bars3Icon,
-  BellIcon,
-  Cog6ToothIcon,
-  UserCircleIcon,
-  ScaleIcon,
-  DocumentTextIcon,
-  CurrencyDollarIcon,
   LanguageIcon,
   SunIcon,
   MoonIcon,
@@ -22,7 +16,6 @@ interface TopbarProps {
 }
 
 function Topbar({ toggleSidebar }: TopbarProps) {
-  const [showNotifications, setShowNotifications] = useState(false);
   const [showLanguageMenu, setShowLanguageMenu] = useState(false);
   const [showUserMenu, setShowUserMenu] = useState(false);
   const { language, setLanguage, t } = useLanguage();
@@ -46,13 +39,13 @@ function Topbar({ toggleSidebar }: TopbarProps) {
       <button 
         className="topbar-menu-btn"
         onClick={toggleSidebar}
-        aria-label="Toggle menu"
+        aria-label={t.topbar.toggleMenu}
       >
         <Bars3Icon className="hamburger-icon" style={{ width: '24px', height: '24px' }} />
       </button>
 
       <div className="topbar-title">
-        <h1>Case Management System</h1>
+        <h1>{t.topbar.systemTitle}</h1>
       </div>
 
       <div className="topbar-actions">
@@ -60,8 +53,8 @@ function Topbar({ toggleSidebar }: TopbarProps) {
         <button 
           className="topbar-btn"
           onClick={toggleTheme}
-          aria-label="Toggle theme"
-          title={theme === 'light' ? 'Switch to dark mode' : 'Switch to light mode'}
+          aria-label={t.topbar.toggleTheme}
+          title={theme === 'light' ? t.topbar.switchToDark : t.topbar.switchToLight}
         >
           {theme === 'light' ? (
             <MoonIcon style={{ width: '20px', height: '20px' }} />
@@ -75,7 +68,7 @@ function Topbar({ toggleSidebar }: TopbarProps) {
           <button 
             className="topbar-btn"
             onClick={() => setShowLanguageMenu(!showLanguageMenu)}
-            aria-label="Change language"
+            aria-label={t.topbar.changeLanguage}
             style={{ display: 'flex', alignItems: 'center', gap: '4px' }}
           >
             <LanguageIcon style={{ width: '20px', height: '20px' }} />
@@ -88,7 +81,7 @@ function Topbar({ toggleSidebar }: TopbarProps) {
             <div style={{
               position: 'absolute',
               top: '100%',
-              right: '0',
+              insetInlineEnd: '0',
               marginTop: '8px',
               background: 'var(--bg-primary)',
               borderRadius: '12px',
@@ -125,7 +118,7 @@ function Topbar({ toggleSidebar }: TopbarProps) {
                   <span style={{ fontSize: '20px' }}>{lang.flag}</span>
                   <span>{lang.name}</span>
                   {language === lang.code && (
-                    <span style={{ marginLeft: 'auto', color: 'var(--primary-color)' }}>✓</span>
+                    <span style={{ marginInlineStart: 'auto', color: 'var(--primary-color)' }}>✓</span>
                   )}
                 </button>
               ))}
@@ -133,68 +126,14 @@ function Topbar({ toggleSidebar }: TopbarProps) {
           )}
         </div>
 
-        <button 
-          className="topbar-btn"
-          onClick={() => setShowNotifications(!showNotifications)}
-          aria-label="Notifications"
-        >
-          <BellIcon style={{ width: '20px', height: '20px' }} />
-          <span className="topbar-badge">3</span>
-        </button>
-
-        <button className="topbar-btn" aria-label="Settings">
-          <Cog6ToothIcon style={{ width: '20px', height: '20px' }} />
-        </button>
-
-        <div className="topbar-user">
-          <UserCircleIcon className="topbar-user-avatar" style={{ width: '36px', height: '36px', color: 'var(--gray-600)' }} />
-        </div>
       </div>
-
-      {showNotifications && (
-        <div className="topbar-dropdown">
-          <div className="topbar-dropdown-header">
-            <h3>{t.topbar.notifications}</h3>
-            <button onClick={() => setShowNotifications(false)}>✕</button>
-          </div>
-          <div className="topbar-dropdown-body">
-            <div className="notification-item">
-              <div className="notification-icon">
-                <ScaleIcon style={{ width: '20px', height: '20px', color: 'var(--primary-color)' }} />
-              </div>
-              <div className="notification-content">
-                <p>{t.topbar.notification1}</p>
-                <span className="notification-time">2 hours ago</span>
-              </div>
-            </div>
-            <div className="notification-item">
-              <div className="notification-icon">
-                <DocumentTextIcon style={{ width: '20px', height: '20px', color: 'var(--primary-color)' }} />
-              </div>
-              <div className="notification-content">
-                <p>{t.topbar.notification2}</p>
-                <span className="notification-time">5 hours ago</span>
-              </div>
-            </div>
-            <div className="notification-item">
-              <div className="notification-icon">
-                <CurrencyDollarIcon style={{ width: '20px', height: '20px', color: 'var(--primary-color)' }} />
-              </div>
-              <div className="notification-content">
-                <p>{t.topbar.notification3}</p>
-                <span className="notification-time">1 day ago</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
 
       {/* User Menu */}
       <div className="topbar-icon-wrapper" style={{ position: 'relative' }}>
         <button
           className="topbar-icon"
           onClick={() => setShowUserMenu(!showUserMenu)}
-          title="User Menu"
+          title={t.topbar.userMenu}
         >
           <div style={{
             width: '40px',
@@ -213,9 +152,9 @@ function Topbar({ toggleSidebar }: TopbarProps) {
         </button>
 
         {showUserMenu && (
-          <div className="topbar-dropdown" style={{ right: 0, minWidth: '250px' }}>
+          <div className="topbar-dropdown" style={{ insetInlineEnd: 0, minWidth: '250px' }}>
             <div className="topbar-dropdown-header">
-              <h4>User Profile</h4>
+              <h4>{t.topbar.userProfile}</h4>
             </div>
             <div className="topbar-dropdown-body">
               <div style={{ padding: '12px 16px', borderBottom: '1px solid var(--border-color)' }}>
@@ -259,7 +198,7 @@ function Topbar({ toggleSidebar }: TopbarProps) {
                 onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
               >
                 <ArrowRightOnRectangleIcon style={{ width: '20px', height: '20px' }} />
-                Logout
+                {t.topbar.logout}
               </button>
             </div>
           </div>
