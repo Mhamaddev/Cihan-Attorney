@@ -225,6 +225,15 @@ export const translations = {
       userMenu: 'User menu',
       userProfile: 'User Profile',
       logout: 'Logout',
+      notifications: 'Notifications',
+      noNotifications: 'Nothing needs your attention',
+      courtHearing: 'Court hearing',
+      taskOverdue: 'Task overdue',
+      taskDueToday: 'Task due today',
+      today: 'Today',
+      tomorrow: 'Tomorrow',
+      inDays: 'In {n} days',
+      daysLate: '{n} days late',
     },
     
     // Common
@@ -470,6 +479,15 @@ export const translations = {
       userMenu: 'لیستەی بەکارهێنەر',
       userProfile: 'پرۆفایلی بەکارهێنەر',
       logout: 'چوونەدەرەوە',
+      notifications: 'ئاگادارکردنەوەکان',
+      noNotifications: 'هیچ شتێک نییە پێویست بە سەرنج بێت',
+      courtHearing: 'دانیشتنی دادگا',
+      taskOverdue: 'ئەرکی دواکەوتوو',
+      taskDueToday: 'ئەرکی ئەمڕۆ',
+      today: 'ئەمڕۆ',
+      tomorrow: 'سبەینێ',
+      inDays: 'لە {n} ڕۆژدا',
+      daysLate: '{n} ڕۆژ دواکەوتووە',
     },
     
     // Common
@@ -715,6 +733,15 @@ export const translations = {
       userMenu: 'قائمة المستخدم',
       userProfile: 'الملف الشخصي',
       logout: 'تسجيل الخروج',
+      notifications: 'الإشعارات',
+      noNotifications: 'لا يوجد ما يتطلب انتباهك',
+      courtHearing: 'جلسة محكمة',
+      taskOverdue: 'مهمة متأخرة',
+      taskDueToday: 'مهمة مستحقة اليوم',
+      today: 'اليوم',
+      tomorrow: 'غداً',
+      inDays: 'خلال {n} أيام',
+      daysLate: 'متأخرة {n} أيام',
     },
     
     // Common
