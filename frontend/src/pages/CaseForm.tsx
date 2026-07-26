@@ -228,9 +228,7 @@ function CaseForm() {
         <h2 style={{ margin: 0, fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)' }}>
           {isEditMode ? t.caseForm.editCase : t.caseForm.newCase}
         </h2>
-        <p style={{ margin: '8px 0 0 0', color: 'var(--text-tertiary)' }}>
-          {isEditMode ? t.caseForm.subtitleEdit : t.caseForm.subtitleNew}
-        </p>
+        
       </div>
 
       {error && <div className="alert alert-error">{error}</div>}
