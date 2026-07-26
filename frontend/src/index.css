@@ -219,6 +219,22 @@
   box-sizing: border-box;
 }
 
+/*
+ * Form controls do NOT inherit font-family -- every browser's built-in
+ * stylesheet hard-sets button/input/select/textarea to a system font (Arial in
+ * Chrome), so the family on <body> never reaches them. Without this rule the
+ * whole app renders headings and paragraphs in AppSans while every button,
+ * menu item and input falls back to Arial -- which for Kurdish and Arabic means
+ * a system Arabic face instead of Bahij. Nothing looks broken, it just quietly
+ * uses the wrong typeface, including the language menu itself.
+ */
+button,
+input,
+select,
+textarea {
+  font-family: inherit;
+}
+
 body {
   font-family: 'AppSans', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto',
     'Noto Sans Arabic', 'Tahoma', 'Helvetica Neue', sans-serif;
