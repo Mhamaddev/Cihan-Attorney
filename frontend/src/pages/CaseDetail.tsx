@@ -11,6 +11,12 @@ import {
 } from '../services/api';
 import type { Case } from '../types';
 
+// Uploaded files are stored as root-relative paths ("/uploads/<name>") and are
+// served by the same host as the API, so the download origin is the API URL
+// minus its /api suffix. Hardcoding it broke downloads in production.
+const FILE_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api')
+  .replace(/\/api\/?$/, '');
+
 function CaseDetail() {
   const { id } = useParams<{ id: string }>();
   const [caseData, setCaseData] = useState<Case | null>(null);
@@ -480,7 +486,7 @@ function CaseDetail() {
                   <td>
                     <div className="flex gap-10">
                       <a
-                        href={`http://localhost:5000${file.file_path}`}
+                        href={`${FILE_BASE}${file.file_path}`}
                         target="_blank"
                         rel="noreferrer"
                         className="btn btn-sm btn-secondary"
