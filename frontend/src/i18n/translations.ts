@@ -211,15 +211,20 @@ export const translations = {
     
     // Topbar
     topbar: {
-      notifications: 'Notifications',
       settings: 'Settings',
       profile: 'Profile',
       lawyer: 'Lawyer',
       admin: 'Admin',
       
-      notification1: 'New court date scheduled',
-      notification2: 'Document uploaded to case',
-      notification3: 'Expense added',
+      systemTitle: 'Case Management System',
+      toggleMenu: 'Toggle menu',
+      toggleTheme: 'Toggle theme',
+      switchToDark: 'Switch to dark mode',
+      switchToLight: 'Switch to light mode',
+      changeLanguage: 'Change language',
+      userMenu: 'User menu',
+      userProfile: 'User Profile',
+      logout: 'Logout',
     },
     
     // Common
@@ -451,15 +456,20 @@ export const translations = {
     
     // Topbar
     topbar: {
-      notifications: 'ئاگادارییەکان',
       settings: 'ڕێکخستنەکان',
       profile: 'پرۆفایل',
       lawyer: 'پارێزەر',
       admin: 'بەڕێوەبەر',
       
-      notification1: 'بەرواری نوێی دادگا دیاریکرا',
-      notification2: 'بەڵگەنامە بارکرا بۆ کەیس',
-      notification3: 'خەرجی زیادکرا',
+      systemTitle: 'سیستەمی بەڕێوەبردنی کەیس',
+      toggleMenu: 'کردنەوە/داخستنی لیستە',
+      toggleTheme: 'گۆڕینی ڕووکار',
+      switchToDark: 'گۆڕین بۆ دۆخی تاریک',
+      switchToLight: 'گۆڕین بۆ دۆخی ڕووناک',
+      changeLanguage: 'گۆڕینی زمان',
+      userMenu: 'لیستەی بەکارهێنەر',
+      userProfile: 'پرۆفایلی بەکارهێنەر',
+      logout: 'چوونەدەرەوە',
     },
     
     // Common
@@ -691,15 +701,20 @@ export const translations = {
     
     // Topbar
     topbar: {
-      notifications: 'الإشعارات',
       settings: 'الإعدادات',
       profile: 'الملف الشخصي',
       lawyer: 'محامي',
       admin: 'مدير',
       
-      notification1: 'تم تحديد موعد محكمة جديد',
-      notification2: 'تم رفع مستند إلى القضية',
-      notification3: 'تمت إضافة مصروف',
+      systemTitle: 'نظام إدارة القضايا',
+      toggleMenu: 'تبديل القائمة',
+      toggleTheme: 'تبديل المظهر',
+      switchToDark: 'التبديل إلى الوضع الداكن',
+      switchToLight: 'التبديل إلى الوضع الفاتح',
+      changeLanguage: 'تغيير اللغة',
+      userMenu: 'قائمة المستخدم',
+      userProfile: 'الملف الشخصي',
+      logout: 'تسجيل الخروج',
     },
     
     // Common
