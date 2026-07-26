@@ -227,7 +227,7 @@ export const translations = {
       lawyer: 'Lawyer',
       admin: 'Admin',
       
-      systemTitle: 'Case Management System',
+      systemTitle: '',
       toggleMenu: 'Toggle menu',
       toggleTheme: 'Toggle theme',
       switchToDark: 'Switch to dark mode',
@@ -492,7 +492,7 @@ export const translations = {
       lawyer: 'پارێزەر',
       admin: 'بەڕێوەبەر',
       
-      systemTitle: 'سیستەمی بەڕێوەبردنی کەیس',
+      systemTitle: '',
       toggleMenu: 'کردنەوە/داخستنی لیستە',
       toggleTheme: 'گۆڕینی ڕووکار',
       switchToDark: 'گۆڕین بۆ دۆخی تاریک',
@@ -757,7 +757,7 @@ export const translations = {
       lawyer: 'محامي',
       admin: 'مدير',
       
-      systemTitle: 'نظام إدارة القضايا',
+      systemTitle: '',
       toggleMenu: 'تبديل القائمة',
       toggleTheme: 'تبديل المظهر',
       switchToDark: 'التبديل إلى الوضع الداكن',
