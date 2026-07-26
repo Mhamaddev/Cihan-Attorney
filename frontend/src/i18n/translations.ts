@@ -144,6 +144,17 @@ export const translations = {
       loading: 'Loading...',
       creating: 'Creating...',
       updating: 'Updating...',
+
+      subtitleNew: 'Record who is bringing the case and who it is against',
+      subtitleEdit: 'Update this case and the people involved',
+      applicantRole: 'Applicant',
+      wantedRole: 'Defendant',
+      optional: 'Optional',
+      errRequestType: 'Enter a request type',
+      errApplicantName: 'Enter the applicant name',
+      errWantedName: 'Enter the defendant name',
+      loadFailed: 'Could not load this case. Refresh to try again.',
+      saveFailed: 'Could not save the case. Check your connection and try again.',
     },
     
     // Case Detail
@@ -398,6 +409,17 @@ export const translations = {
       loading: 'بارکردن...',
       creating: 'دروستکردن...',
       updating: 'نوێکردنەوە...',
+
+      subtitleNew: 'تۆمارکردنی ئەوەی کەیسەکە دەخاتەڕوو و ئەوەی لە دژیەتی',
+      subtitleEdit: 'نوێکردنەوەی ئەم کەیسە و ئەو کەسانەی تێیدان',
+      applicantRole: 'داواکار',
+      wantedRole: 'بەدواداچوو',
+      optional: 'ئارەزوومەندانە',
+      errRequestType: 'جۆری داواکاری بنووسە',
+      errApplicantName: 'ناوی داواکار بنووسە',
+      errWantedName: 'ناوی بەدواداچوو بنووسە',
+      loadFailed: 'نەتوانرا ئەم کەیسە باربکرێت. لاپەڕەکە نوێ بکەرەوە و دووبارە هەوڵ بدە.',
+      saveFailed: 'نەتوانرا کەیسەکە پاشەکەوت بکرێت. پەیوەندییەکەت بپشکنە و دووبارە هەوڵ بدە.',
     },
     
     // Case Detail
@@ -652,6 +674,17 @@ export const translations = {
       loading: 'جاري التحميل...',
       creating: 'جاري الإنشاء...',
       updating: 'جاري التحديث...',
+
+      subtitleNew: 'سجّل من يرفع القضية ومن هي ضده',
+      subtitleEdit: 'تحديث هذه القضية والأشخاص المعنيين',
+      applicantRole: 'مقدم الطلب',
+      wantedRole: 'المطلوب',
+      optional: 'اختياري',
+      errRequestType: 'أدخل نوع الطلب',
+      errApplicantName: 'أدخل اسم مقدم الطلب',
+      errWantedName: 'أدخل اسم المطلوب',
+      loadFailed: 'تعذّر تحميل هذه القضية. حدّث الصفحة وحاول مرة أخرى.',
+      saveFailed: 'تعذّر حفظ القضية. تحقق من اتصالك وحاول مرة أخرى.',
     },
     
     // Case Detail
