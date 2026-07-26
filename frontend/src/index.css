@@ -968,29 +968,54 @@ select.form-control {
   color: var(--danger-color);
 }
 
-/* Checkbox rows read as a control, not as stray text next to a tick. */
-.checkbox-field {
+/*
+ * Checkbox rows read as a control, not as stray text next to a tick.
+ *
+ * These selectors are deliberately specific, because two other rules match the
+ * same elements and would otherwise win:
+ *
+ *   .form-group label  (0,1,1) outranks a bare .checkbox-field (0,1,0) and
+ *                      replaces display:flex with display:block, dropping the
+ *                      gap and the vertical centering.
+ *   .form-group input  (0,1,1) is declared globally in UserManagement.css --
+ *                      a page stylesheet that Vite bundles for every page --
+ *                      and loads after this one, so on a tie it wins and
+ *                      stretches the tick to width:100% with padding and a
+ *                      border, i.e. a full-width empty box.
+ *
+ * Qualifying by attribute and by .form-group puts both beyond reach.
+ */
+.checkbox-field,
+.form-group .checkbox-field {
   display: flex;
   align-items: center;
   gap: 10px;
+  margin-bottom: 0;
   padding: 12px 14px;
   border: 1.5px solid var(--border-color);
   border-radius: var(--border-radius);
   cursor: pointer;
+  font-size: 14px;
   font-weight: 500;
   color: var(--text-primary);
   transition: border-color 0.2s, background-color 0.2s;
 }
 
-.checkbox-field:hover {
+.checkbox-field:hover,
+.form-group .checkbox-field:hover {
   border-color: var(--primary-color);
   background: var(--primary-tint);
 }
 
-.checkbox-field input {
+.checkbox-field input[type='checkbox'],
+.form-group .checkbox-field input[type='checkbox'] {
   width: 18px;
   height: 18px;
+  min-width: 18px;
   flex-shrink: 0;
+  margin: 0;
+  padding: 0;
+  border-radius: 0;
   cursor: pointer;
   accent-color: var(--primary-color);
 }

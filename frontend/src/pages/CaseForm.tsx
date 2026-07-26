@@ -269,17 +269,17 @@ function CaseForm() {
             className={isEditMode ? 'grid grid-cols-2' : ''}
             style={isEditMode ? { alignItems: 'end' } : undefined}
           >
-            <div className="form-group" style={{ marginBottom: 0 }}>
-              <label className="checkbox-field">
-                <input
-                  type="checkbox"
-                  name="is_called_for_court"
-                  checked={formData.is_called_for_court}
-                  onChange={handleInputChange}
-                />
-                {t.caseForm.calledForCourt}
-              </label>
-            </div>
+            {/* Deliberately not wrapped in .form-group: that would pull in
+                `.form-group label`, whose display:block flattens this row. */}
+            <label className="checkbox-field">
+              <input
+                type="checkbox"
+                name="is_called_for_court"
+                checked={formData.is_called_for_court}
+                onChange={handleInputChange}
+              />
+              {t.caseForm.calledForCourt}
+            </label>
 
             {isEditMode && (
               <div className="form-group" style={{ marginBottom: 0 }}>
