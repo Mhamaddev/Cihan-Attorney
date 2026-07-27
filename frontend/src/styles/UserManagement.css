@@ -161,8 +161,19 @@
   padding: 24px;
 }
 
-.form-group input,
-.form-group select {
+/*
+ * Scoped to this page. Vite bundles every stylesheet into one file loaded on
+ * every route, so these were global: a bare `.form-group input` styled inputs
+ * across the whole app, competing with the shared `.form-control` system in
+ * index.css and winning ties by load order. That is what stretched the case
+ * form's checkbox into a full-width bordered box.
+ *
+ * Verified safe to scope: `.form-group` is the only class in this file used
+ * outside this page, and every input inside a form group elsewhere already
+ * carries `.form-control`, so nothing else was relying on these rules.
+ */
+.user-management .form-group input,
+.user-management .form-group select {
   width: 100%;
   padding: 12px;
   border: 1px solid var(--border-color);
@@ -173,14 +184,14 @@
   transition: all 0.2s;
 }
 
-.form-group input:focus,
-.form-group select:focus {
+.user-management .form-group input:focus,
+.user-management .form-group select:focus {
   outline: none;
   border-color: var(--primary-color);
   box-shadow: 0 0 0 3px var(--primary-tint);
 }
 
-.form-group input:disabled {
+.user-management .form-group input:disabled {
   background: var(--hover-bg);
   cursor: not-allowed;
   opacity: 0.6;
