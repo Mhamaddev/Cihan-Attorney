@@ -515,11 +515,23 @@ body {
   height: 24px;
 }
 
+/*
+ * A flex item will not shrink below its content by default, so without
+ * min-width: 0 a long title pushes the action buttons off a narrow screen
+ * instead of truncating.
+ */
+.topbar-title {
+  min-width: 0;
+}
+
 .topbar-title h1 {
   font-size: 20px;
   font-weight: 600;
   color: var(--text-primary);
   margin: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .topbar-actions {
@@ -594,6 +606,22 @@ body {
   box-shadow: var(--shadow-lg);
   border: 1px solid var(--border-color);
   z-index: 1001;
+}
+
+/*
+ * These two live as classes rather than inline styles on purpose: an inline
+ * width would outrank the mobile rule below and pin the panel to its desktop
+ * size on a phone, pushing it off the edge of the screen.
+ */
+.topbar-dropdown--notifications {
+  inset-inline-end: 0;
+  width: 340px;
+}
+
+.topbar-dropdown--user {
+  inset-inline-end: 0;
+  width: auto;
+  min-width: 250px;
 }
 
 .topbar-dropdown-header {
@@ -1041,6 +1069,28 @@ select.form-control {
 }
 
 /* Table */
+/*
+ * Tables need their own scroll axis. `.app-content` sets overflow-x: hidden so
+ * the page never scrolls sideways, which means an over-wide table is silently
+ * CLIPPED rather than reachable -- on a phone the case list lost everything
+ * from Status rightwards, the row actions included, with no way to get at it.
+ * Wrapping the table lets it scroll inside that clip.
+ */
+.table-wrap {
+  width: 100%;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+/*
+ * Headers set the table's minimum width by refusing to wrap, so narrow tables
+ * still fit the screen and only genuinely wide ones scroll. A blanket
+ * min-width would force scrolling on the three-column tables too.
+ */
+.table-wrap .table th {
+  white-space: nowrap;
+}
+
 .table {
   width: 100%;
   border-collapse: collapse;
@@ -1049,7 +1099,7 @@ select.form-control {
 .table th,
 .table td {
   padding: 16px 12px;
-  text-align: left;
+  text-align: start;
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -1058,6 +1108,10 @@ select.form-control {
   font-weight: 600;
   color: var(--text-secondary);
   font-size: 13px;
+}
+
+/* Tracking breaks the joins between Arabic letters, so LTR only. */
+[dir='ltr'] .table th {
   text-transform: uppercase;
   letter-spacing: 0.4px;
 }
@@ -1209,10 +1263,22 @@ select.form-control {
     padding: 16px;
   }
 
-  .topbar-dropdown {
-    inset-inline-end: 8px;
-    width: calc(100vw - 16px);
-    max-width: 360px;
+  /*
+   * Switched to fixed on purpose. These panels are absolutely positioned
+   * against the small wrapper around their button, so a viewport-width value
+   * would be measured from that wrapper and hang off the edge of the screen.
+   * Fixed makes the insets viewport-relative, so pinning both sides spans the
+   * screen with an 8px margin regardless of where the button sits.
+   */
+  .topbar-dropdown,
+  .topbar-dropdown--notifications,
+  .topbar-dropdown--user {
+    position: fixed;
+    top: calc(var(--topbar-height) + 8px);
+    inset-inline: 8px;
+    width: auto;
+    min-width: 0;
+    max-width: none;
   }
 
   .grid-cols-2,
@@ -1231,5 +1297,46 @@ select.form-control {
 
   .card {
     padding: 16px;
+  }
+}
+
+/*
+ * Small phones. The header now carries five controls -- menu, theme, language,
+ * notifications, avatar -- and at full padding and gap they crowd the title off
+ * a 360px screen. Everything here is spacing only; nothing is hidden.
+ */
+@media (max-width: 480px) {
+  .topbar {
+    padding: 0 12px;
+  }
+
+  .topbar-actions {
+    gap: 4px;
+  }
+
+  .topbar-btn {
+    padding: 6px;
+  }
+
+  .topbar-title h1 {
+    font-size: 15px;
+  }
+
+  .app-content {
+    padding: 12px;
+  }
+
+  .card {
+    padding: 14px;
+  }
+
+  .party {
+    padding: 16px;
+  }
+
+  /* Share the row rather than leaving either action too narrow to read. */
+  .form-actions .btn {
+    flex: 1 1 auto;
+    text-align: center;
   }
 }

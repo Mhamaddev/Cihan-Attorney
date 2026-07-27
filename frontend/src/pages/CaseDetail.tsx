@@ -274,31 +274,33 @@ function CaseDetail() {
         )}
 
         {caseData.court_dates && caseData.court_dates.length > 0 ? (
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Date & Time</th>
-                <th>Notes</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {caseData.court_dates.map((date) => (
-                <tr key={date.id}>
-                  <td>{new Date(date.interview_date).toLocaleString()}</td>
-                  <td>{date.notes || 'N/A'}</td>
-                  <td>
-                    <button
-                      onClick={() => date.id && handleDeleteCourtDate(date.id)}
-                      className="btn btn-sm btn-danger"
-                    >
-                      Delete
-                    </button>
-                  </td>
+          <div className="table-wrap">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Date & Time</th>
+                  <th>Notes</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {caseData.court_dates.map((date) => (
+                  <tr key={date.id}>
+                    <td>{new Date(date.interview_date).toLocaleString()}</td>
+                    <td>{date.notes || 'N/A'}</td>
+                    <td>
+                      <button
+                        onClick={() => date.id && handleDeleteCourtDate(date.id)}
+                        className="btn btn-sm btn-danger"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <p style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: '20px' }}>No court dates scheduled</p>
         )}
@@ -374,35 +376,37 @@ function CaseDetail() {
         )}
 
         {caseData.expenses && caseData.expenses.length > 0 ? (
-          <table className="table">
-            <thead>
-              <tr>
-                <th>Name</th>
-                <th>Amount</th>
-                <th>Date</th>
-                <th>Note</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {caseData.expenses.map((exp) => (
-                <tr key={exp.id}>
-                  <td>{exp.expense_name}</td>
-                  <td>${parseFloat(String(exp.amount)).toFixed(2)}</td>
-                  <td>{new Date(exp.expense_date).toLocaleDateString()}</td>
-                  <td>{exp.note || 'N/A'}</td>
-                  <td>
-                    <button
-                      onClick={() => exp.id && handleDeleteExpense(exp.id)}
-                      className="btn btn-sm btn-danger"
-                    >
-                      Delete
-                    </button>
-                  </td>
+          <div className="table-wrap">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>Amount</th>
+                  <th>Date</th>
+                  <th>Note</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {caseData.expenses.map((exp) => (
+                  <tr key={exp.id}>
+                    <td>{exp.expense_name}</td>
+                    <td>${parseFloat(String(exp.amount)).toFixed(2)}</td>
+                    <td>{new Date(exp.expense_date).toLocaleDateString()}</td>
+                    <td>{exp.note || 'N/A'}</td>
+                    <td>
+                      <button
+                        onClick={() => exp.id && handleDeleteExpense(exp.id)}
+                        className="btn btn-sm btn-danger"
+                      >
+                        Delete
+                      </button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <p style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: '20px' }}>No expenses recorded</p>
         )}
@@ -462,49 +466,51 @@ function CaseDetail() {
         )}
 
         {caseData.files && caseData.files.length > 0 ? (
-          <table className="table">
-            <thead>
-              <tr>
-                <th>File Name</th>
-                <th>Category</th>
-                <th>Type</th>
-                <th>Uploaded</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {caseData.files.map((file) => (
-                <tr key={file.id}>
-                  <td>{file.file_name}</td>
-                  <td>
-                    <span className="badge badge-info">
-                      {file.category.replace('_', ' ')}
-                    </span>
-                  </td>
-                  <td>{file.file_type}</td>
-                  <td>{file.uploaded_at ? new Date(file.uploaded_at).toLocaleDateString() : 'N/A'}</td>
-                  <td>
-                    <div className="flex gap-10">
-                      <a
-                        href={`${FILE_BASE}${file.file_path}`}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="btn btn-sm btn-secondary"
-                      >
-                        Download
-                      </a>
-                      <button
-                        onClick={() => file.id && handleDeleteFile(file.id)}
-                        className="btn btn-sm btn-danger"
-                      >
-                        Delete
-                      </button>
-                    </div>
-                  </td>
+          <div className="table-wrap">
+            <table className="table">
+              <thead>
+                <tr>
+                  <th>File Name</th>
+                  <th>Category</th>
+                  <th>Type</th>
+                  <th>Uploaded</th>
+                  <th>Actions</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
+              </thead>
+              <tbody>
+                {caseData.files.map((file) => (
+                  <tr key={file.id}>
+                    <td>{file.file_name}</td>
+                    <td>
+                      <span className="badge badge-info">
+                        {file.category.replace('_', ' ')}
+                      </span>
+                    </td>
+                    <td>{file.file_type}</td>
+                    <td>{file.uploaded_at ? new Date(file.uploaded_at).toLocaleDateString() : 'N/A'}</td>
+                    <td>
+                      <div className="flex gap-10">
+                        <a
+                          href={`${FILE_BASE}${file.file_path}`}
+                          target="_blank"
+                          rel="noreferrer"
+                          className="btn btn-sm btn-secondary"
+                        >
+                          Download
+                        </a>
+                        <button
+                          onClick={() => file.id && handleDeleteFile(file.id)}
+                          className="btn btn-sm btn-danger"
+                        >
+                          Delete
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
         ) : (
           <p style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: '20px' }}>No files uploaded</p>
         )}

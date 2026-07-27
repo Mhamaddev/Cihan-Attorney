@@ -198,7 +198,7 @@ function Topbar({ toggleSidebar }: TopbarProps) {
           </button>
 
           {openMenu === 'notifications' && (
-            <div className="topbar-dropdown" style={{ insetInlineEnd: 0, width: '340px' }}>
+            <div className="topbar-dropdown topbar-dropdown--notifications">
               <div className="topbar-dropdown-header">
                 <h4>{t.topbar.notifications}</h4>
               </div>
@@ -290,7 +290,7 @@ function Topbar({ toggleSidebar }: TopbarProps) {
           </button>
 
           {openMenu === 'user' && (
-            <div className="topbar-dropdown" style={{ insetInlineEnd: 0, minWidth: '250px' }}>
+            <div className="topbar-dropdown topbar-dropdown--user">
               <div className="topbar-dropdown-header">
                 <h4>{t.topbar.userProfile}</h4>
               </div>

@@ -276,63 +276,65 @@ function CaseList() {
               <button onClick={clearFilters} className="btn btn-secondary">{t.casesList.clearFilters}</button>
             </div>
           ) : (
-            <table className="table">
-              <thead>
-                <tr>
-                  <th>{t.casesList.id}</th>
-                  <th>{t.casesList.requestType}</th>
-                  <th>{t.casesList.applicant}</th>
-                  <th>{t.casesList.wanted}</th>
-                  <th>{t.casesList.status}</th>
-                  <th>{t.casesList.calledForCourt}</th>
-                  <th>{t.casesList.created}</th>
-                  <th>{t.casesList.actions}</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filteredCases.map((caseItem) => (
-                  <tr key={caseItem.id}>
-                    <td>#{caseItem.id}</td>
-                    <td>{caseItem.request_type}</td>
-                    <td>{caseItem.applicants?.[0]?.name || 'N/A'}</td>
-                    <td>{caseItem.wanted?.[0]?.name || 'N/A'}</td>
-                    <td>
-                      <span className={`badge ${
-                        caseItem.status === 'active' ? 'badge-success' :
-                        caseItem.status === 'closed' ? 'badge-danger' : 'badge-warning'
-                      }`}>
-                        {caseItem.status || 'active'}
-                      </span>
-                    </td>
-                    <td>
-                      {caseItem.is_called_for_court ? (
-                        <span className="badge badge-info">{t.casesList.yes}</span>
-                      ) : (
-                        <span className="badge badge-warning">{t.casesList.no}</span>
-                      )}
-                    </td>
-                    <td>{caseItem.created_at ? new Date(caseItem.created_at).toLocaleDateString() : 'N/A'}</td>
-                    <td>
-                      <div className="flex gap-10">
-                        <Link to={`/cases/${caseItem.id}`} className="btn-icon btn-icon-view" title={t.casesList.view}>
-                          <EyeIcon style={{ width: '16px', height: '16px' }} />
-                        </Link>
-                        <Link to={`/cases/${caseItem.id}/edit`} className="btn-icon btn-icon-edit" title={t.casesList.edit}>
-                          <PencilIcon style={{ width: '16px', height: '16px' }} />
-                        </Link>
-                        <button
-                          onClick={() => caseItem.id && handleDelete(caseItem.id)}
-                          className="btn-icon btn-icon-delete"
-                          title={t.casesList.delete}
-                        >
-                          <TrashIcon style={{ width: '16px', height: '16px' }} />
-                        </button>
-                      </div>
-                    </td>
+            <div className="table-wrap">
+              <table className="table">
+                <thead>
+                  <tr>
+                    <th>{t.casesList.id}</th>
+                    <th>{t.casesList.requestType}</th>
+                    <th>{t.casesList.applicant}</th>
+                    <th>{t.casesList.wanted}</th>
+                    <th>{t.casesList.status}</th>
+                    <th>{t.casesList.calledForCourt}</th>
+                    <th>{t.casesList.created}</th>
+                    <th>{t.casesList.actions}</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody>
+                  {filteredCases.map((caseItem) => (
+                    <tr key={caseItem.id}>
+                      <td>#{caseItem.id}</td>
+                      <td>{caseItem.request_type}</td>
+                      <td>{caseItem.applicants?.[0]?.name || 'N/A'}</td>
+                      <td>{caseItem.wanted?.[0]?.name || 'N/A'}</td>
+                      <td>
+                        <span className={`badge ${
+                          caseItem.status === 'active' ? 'badge-success' :
+                          caseItem.status === 'closed' ? 'badge-danger' : 'badge-warning'
+                        }`}>
+                          {caseItem.status || 'active'}
+                        </span>
+                      </td>
+                      <td>
+                        {caseItem.is_called_for_court ? (
+                          <span className="badge badge-info">{t.casesList.yes}</span>
+                        ) : (
+                          <span className="badge badge-warning">{t.casesList.no}</span>
+                        )}
+                      </td>
+                      <td>{caseItem.created_at ? new Date(caseItem.created_at).toLocaleDateString() : 'N/A'}</td>
+                      <td>
+                        <div className="flex gap-10">
+                          <Link to={`/cases/${caseItem.id}`} className="btn-icon btn-icon-view" title={t.casesList.view}>
+                            <EyeIcon style={{ width: '16px', height: '16px' }} />
+                          </Link>
+                          <Link to={`/cases/${caseItem.id}/edit`} className="btn-icon btn-icon-edit" title={t.casesList.edit}>
+                            <PencilIcon style={{ width: '16px', height: '16px' }} />
+                          </Link>
+                          <button
+                            onClick={() => caseItem.id && handleDelete(caseItem.id)}
+                            className="btn-icon btn-icon-delete"
+                            title={t.casesList.delete}
+                          >
+                            <TrashIcon style={{ width: '16px', height: '16px' }} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           )}
       </div>
     </div>
