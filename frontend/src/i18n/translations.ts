@@ -242,6 +242,54 @@ export const translations = {
         other: 'Other',
       },
     },
+
+    // User Management
+    userManagement: {
+      title: 'User Management',
+      subtitle: 'Manage system users and their roles',
+      addUser: 'Add User',
+      loading: 'Loading users...',
+
+      fullName: 'Full Name',
+      username: 'Username',
+      email: 'Email',
+      role: 'Role',
+      status: 'Status',
+      created: 'Created',
+      actions: 'Actions',
+
+      active: 'Active',
+      inactive: 'Inactive',
+      roleAdmin: 'Admin',
+      roleLawyer: 'Lawyer',
+      roleStaff: 'Staff',
+
+      editUser: 'Edit User',
+      resetPassword: 'Reset Password',
+      deleteUser: 'Delete User',
+
+      emptyTitle: 'No users found',
+      emptyHint: 'Add your first user to get started',
+
+      addNewUser: 'Add New User',
+      fullNamePlaceholder: 'Enter full name',
+      usernamePlaceholder: 'Enter username',
+      emailPlaceholder: 'Enter email',
+      password: 'Password',
+      newPassword: 'New Password',
+      passwordPlaceholder: 'Minimum 6 characters',
+      createUser: 'Create User',
+      updateUser: 'Update User',
+
+      deleteConfirm: 'Deleting a user cannot be undone.',
+      resetPasswordFor: 'Set a new password for',
+
+      loadError: 'Could not load users.',
+      saveError: 'Could not save the user.',
+      deleteError: 'Could not delete the user.',
+      resetError: 'Could not reset the password.',
+      passwordTooShort: 'Password must be at least 6 characters',
+    },
     
     // Topbar
     topbar: {
@@ -529,6 +577,53 @@ export const translations = {
         other: 'هیتر',
       },
     },
+
+    userManagement: {
+      title: 'بەڕێوەبردنی بەکارهێنەران',
+      subtitle: 'بەڕێوەبردنی بەکارهێنەرانی سیستەم و ڕۆڵەکانیان',
+      addUser: 'زیادکردنی بەکارهێنەر',
+      loading: 'بارکردنی بەکارهێنەران...',
+
+      fullName: 'ناوی تەواو',
+      username: 'ناوی بەکارهێنەر',
+      email: 'ئیمەیل',
+      role: 'ڕۆڵ',
+      status: 'دۆخ',
+      created: 'دروستکراوە',
+      actions: 'کردارەکان',
+
+      active: 'چالاک',
+      inactive: 'ناچالاک',
+      roleAdmin: 'بەڕێوەبەر',
+      roleLawyer: 'پارێزەر',
+      roleStaff: 'ستاف',
+
+      editUser: 'دەستکاریکردنی بەکارهێنەر',
+      resetPassword: 'ڕێکخستنەوەی وشەی نهێنی',
+      deleteUser: 'سڕینەوەی بەکارهێنەر',
+
+      emptyTitle: 'هیچ بەکارهێنەرێک نەدۆزرایەوە',
+      emptyHint: 'یەکەم بەکارهێنەر زیاد بکە بۆ دەستپێکردن',
+
+      addNewUser: 'زیادکردنی بەکارهێنەری نوێ',
+      fullNamePlaceholder: 'ناوی تەواو بنووسە',
+      usernamePlaceholder: 'ناوی بەکارهێنەر بنووسە',
+      emailPlaceholder: 'ئیمەیل بنووسە',
+      password: 'وشەی نهێنی',
+      newPassword: 'وشەی نهێنی نوێ',
+      passwordPlaceholder: 'لانیکەم ٦ پیت',
+      createUser: 'دروستکردنی بەکارهێنەر',
+      updateUser: 'نوێکردنەوەی بەکارهێنەر',
+
+      deleteConfirm: 'سڕینەوەی بەکارهێنەر ناتوانرێت بگەڕێندرێتەوە.',
+      resetPasswordFor: 'وشەی نهێنی نوێ دابنێ بۆ',
+
+      loadError: 'نەتوانرا بەکارهێنەران باربکرێن.',
+      saveError: 'نەتوانرا بەکارهێنەرەکە پاشەکەوت بکرێت.',
+      deleteError: 'نەتوانرا بەکارهێنەرەکە بسڕدرێتەوە.',
+      resetError: 'نەتوانرا وشەی نهێنی ڕێک بخرێتەوە.',
+      passwordTooShort: 'وشەی نهێنی دەبێت لانیکەم ٦ پیت بێت',
+    },
     
     // Topbar
     topbar: {
@@ -815,6 +910,53 @@ export const translations = {
         personalInfo: 'معلومات شخصية',
         other: 'أخرى',
       },
+    },
+
+    userManagement: {
+      title: 'إدارة المستخدمين',
+      subtitle: 'إدارة مستخدمي النظام وأدوارهم',
+      addUser: 'إضافة مستخدم',
+      loading: 'جاري تحميل المستخدمين...',
+
+      fullName: 'الاسم الكامل',
+      username: 'اسم المستخدم',
+      email: 'البريد الإلكتروني',
+      role: 'الدور',
+      status: 'الحالة',
+      created: 'تاريخ الإنشاء',
+      actions: 'الإجراءات',
+
+      active: 'نشط',
+      inactive: 'غير نشط',
+      roleAdmin: 'مدير',
+      roleLawyer: 'محامي',
+      roleStaff: 'موظف',
+
+      editUser: 'تعديل المستخدم',
+      resetPassword: 'إعادة تعيين كلمة المرور',
+      deleteUser: 'حذف المستخدم',
+
+      emptyTitle: 'لا يوجد مستخدمون',
+      emptyHint: 'أضف أول مستخدم للبدء',
+
+      addNewUser: 'إضافة مستخدم جديد',
+      fullNamePlaceholder: 'أدخل الاسم الكامل',
+      usernamePlaceholder: 'أدخل اسم المستخدم',
+      emailPlaceholder: 'أدخل البريد الإلكتروني',
+      password: 'كلمة المرور',
+      newPassword: 'كلمة المرور الجديدة',
+      passwordPlaceholder: '٦ أحرف على الأقل',
+      createUser: 'إنشاء مستخدم',
+      updateUser: 'تحديث المستخدم',
+
+      deleteConfirm: 'حذف المستخدم لا يمكن التراجع عنه.',
+      resetPasswordFor: 'تعيين كلمة مرور جديدة لـ',
+
+      loadError: 'تعذّر تحميل المستخدمين.',
+      saveError: 'تعذّر حفظ المستخدم.',
+      deleteError: 'تعذّر حذف المستخدم.',
+      resetError: 'تعذّر إعادة تعيين كلمة المرور.',
+      passwordTooShort: 'يجب أن تكون كلمة المرور ٦ أحرف على الأقل',
     },
     
     // Topbar

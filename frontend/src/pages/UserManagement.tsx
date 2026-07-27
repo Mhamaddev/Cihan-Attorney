@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { 
   UserIcon, 
   PencilIcon, 
@@ -7,13 +7,14 @@ import {
   XMarkIcon,
   KeyIcon
 } from '@heroicons/react/24/outline';
-import { 
-  getAllUsers, 
-  createUser, 
-  updateUser, 
-  deleteUser, 
-  resetUserPassword 
+import {
+  getAllUsers,
+  createUser,
+  updateUser,
+  deleteUser,
+  resetUserPassword
 } from '../services/api';
+import { useLanguage } from '../i18n/LanguageContext';
 import '../styles/UserManagement.css';
 
 interface User {
@@ -36,6 +37,7 @@ interface UserFormData {
 }
 
 function UserManagement() {
+  const { t } = useLanguage();
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
@@ -55,22 +57,24 @@ function UserManagement() {
   });
   const [error, setError] = useState('');
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
-  const fetchUsers = async () => {
+  // Wrapped because it now reads `t` for its error message, which makes it
+  // reactive -- without this the effect would close over a stale language.
+  const fetchUsers = useCallback(async () => {
     try {
       setLoading(true);
       const data = await getAllUsers();
       setUsers(data);
     } catch (err) {
-      setError('Failed to load users');
+      setError(t.userManagement.loadError);
       console.error(err);
     } finally {
       setLoading(false);
     }
-  };
+  }, [t]);
+
+  useEffect(() => {
+    fetchUsers();
+  }, [fetchUsers]);
 
   const handleOpenModal = (user?: User) => {
     if (user) {
@@ -113,7 +117,7 @@ function UserManagement() {
         await updateUser(editingUser.id, formData);
       } else {
         if (!formData.password || formData.password.length < 6) {
-          setError('Password must be at least 6 characters');
+          setError(t.userManagement.passwordTooShort);
           return;
         }
         await createUser({
@@ -127,7 +131,7 @@ function UserManagement() {
       await fetchUsers();
       handleCloseModal();
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to save user');
+      setError(err instanceof Error ? err.message : t.userManagement.saveError);
     }
   };
 
@@ -145,7 +149,7 @@ function UserManagement() {
       setShowDeleteConfirm(false);
       setUserToDelete(null);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to delete user');
+      setError(err instanceof Error ? err.message : t.userManagement.deleteError);
     }
   };
 
@@ -161,7 +165,7 @@ function UserManagement() {
     if (!userForPassword) return;
 
     if (newPassword.length < 6) {
-      setError('Password must be at least 6 characters');
+      setError(t.userManagement.passwordTooShort);
       return;
     }
 
@@ -172,8 +176,18 @@ function UserManagement() {
       setNewPassword('');
       setError('');
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Failed to reset password');
+      setError(err instanceof Error ? err.message : t.userManagement.resetError);
     }
+  };
+
+  /** Roles are stored as fixed keys; the label comes from the active language. */
+  const roleLabel = (role: string) => {
+    const map: Record<string, string> = {
+      admin: t.userManagement.roleAdmin,
+      lawyer: t.userManagement.roleLawyer,
+      staff: t.userManagement.roleStaff,
+    };
+    return map[role] || role;
   };
 
   const getRoleBadgeColor = (role: string) => {
@@ -192,7 +206,7 @@ function UserManagement() {
   if (loading) {
     return (
       <div className="user-management">
-        <div className="loading">Loading users...</div>
+        <div className="loading">{t.userManagement.loading}</div>
       </div>
     );
   }
@@ -201,12 +215,12 @@ function UserManagement() {
     <div className="user-management">
       <div className="page-header">
         <div>
-          <h1>User Management</h1>
-          <p className="page-subtitle">Manage system users and their roles</p>
+          <h1>{t.userManagement.title}</h1>
+          <p className="page-subtitle">{t.userManagement.subtitle}</p>
         </div>
         <button className="btn btn-primary" onClick={() => handleOpenModal()}>
           <PlusIcon style={{ width: '20px', height: '20px' }} />
-          Add User
+          {t.userManagement.addUser}
         </button>
       </div>
 
@@ -220,13 +234,13 @@ function UserManagement() {
         <table className="users-table">
           <thead>
             <tr>
-              <th>Full Name</th>
-              <th>Username</th>
-              <th>Email</th>
-              <th>Role</th>
-              <th>Status</th>
-              <th>Created</th>
-              <th>Actions</th>
+              <th>{t.userManagement.fullName}</th>
+              <th>{t.userManagement.username}</th>
+              <th>{t.userManagement.email}</th>
+              <th>{t.userManagement.role}</th>
+              <th>{t.userManagement.status}</th>
+              <th>{t.userManagement.created}</th>
+              <th>{t.userManagement.actions}</th>
             </tr>
           </thead>
           <tbody>
@@ -251,8 +265,8 @@ function UserManagement() {
                     <span>{user.full_name}</span>
                   </div>
                 </td>
-                <td>{user.username}</td>
-                <td>{user.email}</td>
+                <td dir="ltr">{user.username}</td>
+                <td dir="ltr">{user.email}</td>
                 <td>
                   <span 
                     className="role-badge" 
@@ -262,11 +276,10 @@ function UserManagement() {
                       padding: '4px 12px',
                       borderRadius: '12px',
                       fontSize: '12px',
-                      fontWeight: '600',
-                      textTransform: 'uppercase'
+                      fontWeight: '600'
                     }}
                   >
-                    {user.role}
+                    {roleLabel(user.role)}
                   </span>
                 </td>
                 <td>
@@ -277,7 +290,7 @@ function UserManagement() {
                       fontWeight: '500'
                     }}
                   >
-                    {user.is_active ? 'Active' : 'Inactive'}
+                    {user.is_active ? t.userManagement.active : t.userManagement.inactive}
                   </span>
                 </td>
                 <td>{new Date(user.created_at).toLocaleDateString()}</td>
@@ -286,21 +299,21 @@ function UserManagement() {
                     <button
                       className="btn-icon btn-icon-edit"
                       onClick={() => handleOpenModal(user)}
-                      title="Edit User"
+                      title={t.userManagement.editUser}
                     >
                       <PencilIcon style={{ width: '18px', height: '18px' }} />
                     </button>
                     <button
                       className="btn-icon btn-icon-password"
                       onClick={() => handlePasswordResetClick(user)}
-                      title="Reset Password"
+                      title={t.userManagement.resetPassword}
                     >
                       <KeyIcon style={{ width: '18px', height: '18px' }} />
                     </button>
                     <button
                       className="btn-icon btn-icon-delete"
                       onClick={() => handleDeleteClick(user)}
-                      title="Delete User"
+                      title={t.userManagement.deleteUser}
                     >
                       <TrashIcon style={{ width: '18px', height: '18px' }} />
                     </button>
@@ -314,8 +327,8 @@ function UserManagement() {
         {users.length === 0 && (
           <div className="empty-state">
             <UserIcon style={{ width: '64px', height: '64px', color: 'var(--text-secondary)' }} />
-            <h3>No users found</h3>
-            <p>Add your first user to get started</p>
+            <h3>{t.userManagement.emptyTitle}</h3>
+            <p>{t.userManagement.emptyHint}</p>
           </div>
         )}
       </div>
@@ -325,7 +338,7 @@ function UserManagement() {
         <div className="modal-overlay" onClick={handleCloseModal}>
           <div className="modal-content" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>{editingUser ? 'Edit User' : 'Add New User'}</h2>
+              <h2>{editingUser ? t.userManagement.editUser : t.userManagement.addNewUser}</h2>
               <button className="modal-close" onClick={handleCloseModal}>
                 <XMarkIcon style={{ width: '24px', height: '24px' }} />
               </button>
@@ -339,87 +352,90 @@ function UserManagement() {
 
             <form onSubmit={handleSubmit}>
               <div className="form-group">
-                <label>Full Name *</label>
+                <label>{t.userManagement.fullName} <span className="required-mark" aria-hidden="true">*</span></label>
                 <input
                   type="text"
                   value={formData.fullName}
                   onChange={(e) => setFormData({ ...formData, fullName: e.target.value })}
                   required
-                  placeholder="Enter full name"
+                  placeholder={t.userManagement.fullNamePlaceholder}
                 />
               </div>
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Username *</label>
+                  <label>{t.userManagement.username} <span className="required-mark" aria-hidden="true">*</span></label>
                   <input
                     type="text"
+                    dir="ltr"
                     value={formData.username}
                     onChange={(e) => setFormData({ ...formData, username: e.target.value })}
                     required
                     disabled={!!editingUser}
-                    placeholder="Enter username"
+                    placeholder={t.userManagement.usernamePlaceholder}
                   />
                 </div>
 
                 <div className="form-group">
-                  <label>Email *</label>
+                  <label>{t.userManagement.email} <span className="required-mark" aria-hidden="true">*</span></label>
                   <input
                     type="email"
+                    dir="ltr"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
                     required
-                    placeholder="Enter email"
+                    placeholder={t.userManagement.emailPlaceholder}
                   />
                 </div>
               </div>
 
               {!editingUser && (
                 <div className="form-group">
-                  <label>Password *</label>
+                  <label>{t.userManagement.password} <span className="required-mark" aria-hidden="true">*</span></label>
                   <input
                     type="password"
+                    dir="ltr"
                     value={formData.password}
                     onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                     required
                     minLength={6}
-                    placeholder="Minimum 6 characters"
+                    placeholder={t.userManagement.passwordPlaceholder}
                   />
                 </div>
               )}
 
               <div className="form-row">
                 <div className="form-group">
-                  <label>Role *</label>
+                  <label>{t.userManagement.role} <span className="required-mark" aria-hidden="true">*</span></label>
                   <select
                     value={formData.role}
                     onChange={(e) => setFormData({ ...formData, role: e.target.value as 'admin' | 'lawyer' | 'staff' })}
                     required
                   >
-                    <option value="staff">Staff</option>
-                    <option value="lawyer">Lawyer</option>
-                    <option value="admin">Admin</option>
+                    <option value="staff">{t.userManagement.roleStaff}</option>
+                    <option value="lawyer">{t.userManagement.roleLawyer}</option>
+                    <option value="admin">{t.userManagement.roleAdmin}</option>
                   </select>
                 </div>
 
                 <div className="form-group">
-                  <label>Status</label>
+                  <label>{t.userManagement.status}</label>
                   <select
                     value={formData.isActive ? 'active' : 'inactive'}
                     onChange={(e) => setFormData({ ...formData, isActive: e.target.value === 'active' })}
                   >
-                    <option value="active">Active</option>
-                    <option value="inactive">Inactive</option>
+                    <option value="active">{t.userManagement.active}</option>
+                    <option value="inactive">{t.userManagement.inactive}</option>
                   </select>
                 </div>
               </div>
 
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={handleCloseModal}>
-                  Cancel
+                  {t.common.cancel}
                 </button>
                 <button type="submit" className="btn btn-primary">
-                  {editingUser ? 'Update User' : 'Create User'}
+                  {editingUser ? t.userManagement.updateUser : t.userManagement.createUser}
                 </button>
               </div>
             </form>
@@ -432,23 +448,27 @@ function UserManagement() {
         <div className="modal-overlay" onClick={() => setShowDeleteConfirm(false)}>
           <div className="modal-content modal-small" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Delete User</h2>
+              <h2>{t.userManagement.deleteUser}</h2>
               <button className="modal-close" onClick={() => setShowDeleteConfirm(false)}>
                 <XMarkIcon style={{ width: '24px', height: '24px' }} />
               </button>
             </div>
 
-            <p style={{ padding: '20px', color: 'var(--text-secondary)' }}>
-              Are you sure you want to delete user <strong>{userToDelete?.full_name}</strong>? 
-              This action cannot be undone.
-            </p>
+            {/* Name on its own line rather than interpolated mid-sentence: the
+                surrounding clause reorders between English, Kurdish and Arabic. */}
+            <div style={{ padding: '20px', color: 'var(--text-secondary)' }}>
+              <p style={{ marginBottom: '8px' }}>
+                <strong style={{ color: 'var(--text-primary)' }}>{userToDelete?.full_name}</strong>
+              </p>
+              <p>{t.userManagement.deleteConfirm}</p>
+            </div>
 
             <div className="modal-actions">
               <button className="btn btn-secondary" onClick={() => setShowDeleteConfirm(false)}>
-                Cancel
+                {t.common.cancel}
               </button>
               <button className="btn btn-danger" onClick={handleDeleteConfirm}>
-                Delete User
+                {t.userManagement.deleteUser}
               </button>
             </div>
           </div>
@@ -460,7 +480,7 @@ function UserManagement() {
         <div className="modal-overlay" onClick={() => setShowPasswordModal(false)}>
           <div className="modal-content modal-small" onClick={(e) => e.stopPropagation()}>
             <div className="modal-header">
-              <h2>Reset Password</h2>
+              <h2>{t.userManagement.resetPassword}</h2>
               <button className="modal-close" onClick={() => setShowPasswordModal(false)}>
                 <XMarkIcon style={{ width: '24px', height: '24px' }} />
               </button>
@@ -473,29 +493,33 @@ function UserManagement() {
             )}
 
             <form onSubmit={handlePasswordReset}>
-              <p style={{ padding: '0 20px 20px', color: 'var(--text-secondary)' }}>
-                Reset password for <strong>{userForPassword?.full_name}</strong>
-              </p>
+              <div style={{ padding: '0 20px 20px', color: 'var(--text-secondary)' }}>
+                <p>{t.userManagement.resetPasswordFor}</p>
+                <p style={{ marginTop: '4px' }}>
+                  <strong style={{ color: 'var(--text-primary)' }}>{userForPassword?.full_name}</strong>
+                </p>
+              </div>
 
               <div className="form-group" style={{ padding: '0 20px' }}>
-                <label>New Password *</label>
+                <label>{t.userManagement.newPassword} <span className="required-mark" aria-hidden="true">*</span></label>
                 <input
                   type="password"
+                  dir="ltr"
                   value={newPassword}
                   onChange={(e) => setNewPassword(e.target.value)}
                   required
                   minLength={6}
-                  placeholder="Minimum 6 characters"
+                  placeholder={t.userManagement.passwordPlaceholder}
                   autoFocus
                 />
               </div>
 
               <div className="modal-actions">
                 <button type="button" className="btn btn-secondary" onClick={() => setShowPasswordModal(false)}>
-                  Cancel
+                  {t.common.cancel}
                 </button>
                 <button type="submit" className="btn btn-primary">
-                  Reset Password
+                  {t.userManagement.resetPassword}
                 </button>
               </div>
             </form>
