@@ -9,6 +9,7 @@ import {
   deleteExpense,
   deleteFile
 } from '../services/api';
+import { useLanguage } from '../i18n/LanguageContext';
 import type { Case } from '../types';
 
 // Uploaded files are stored as root-relative paths ("/uploads/<name>") and are
@@ -19,6 +20,7 @@ const FILE_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api')
 
 function CaseDetail() {
   const { id } = useParams<{ id: string }>();
+  const { t } = useLanguage();
   const [caseData, setCaseData] = useState<Case | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -40,12 +42,12 @@ function CaseDetail() {
       const data = await getCaseById(id);
       setCaseData(data);
     } catch (err) {
-      setError('Failed to load case');
+      setError(t.caseDetail.loadError);
       console.error(err);
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, t]);
 
   useEffect(() => {
     loadCase();
@@ -60,7 +62,7 @@ function CaseDetail() {
       setShowCourtDateForm(false);
       loadCase();
     } catch {
-      alert('Failed to add court date');
+      alert(t.caseDetail.addCourtDateError);
     }
   };
 
@@ -73,7 +75,7 @@ function CaseDetail() {
       setShowExpenseForm(false);
       loadCase();
     } catch {
-      alert('Failed to add expense');
+      alert(t.caseDetail.addExpenseError);
     }
   };
 
@@ -88,49 +90,77 @@ function CaseDetail() {
       setShowFileUpload(false);
       loadCase();
     } catch {
-      alert('Failed to upload file');
+      alert(t.caseDetail.uploadError);
     }
   };
 
   const handleDeleteCourtDate = async (courtDateId: number) => {
     if (!id) return;
-    if (window.confirm('Delete this court date?')) {
+    if (window.confirm(t.caseDetail.confirmDeleteCourtDate)) {
       try {
         await deleteCourtDate(id, courtDateId);
         loadCase();
       } catch {
-        alert('Failed to delete court date');
+        alert(t.caseDetail.deleteCourtDateError);
       }
     }
   };
 
   const handleDeleteExpense = async (expenseId: number) => {
     if (!id) return;
-    if (window.confirm('Delete this expense?')) {
+    if (window.confirm(t.caseDetail.confirmDeleteExpense)) {
       try {
         await deleteExpense(id, expenseId);
         loadCase();
       } catch {
-        alert('Failed to delete expense');
+        alert(t.caseDetail.deleteExpenseError);
       }
     }
   };
 
   const handleDeleteFile = async (fileId: number) => {
     if (!id) return;
-    if (window.confirm('Delete this file?')) {
+    if (window.confirm(t.caseDetail.confirmDeleteFile)) {
       try {
         await deleteFile(id, fileId);
         loadCase();
       } catch {
-        alert('Failed to delete file');
+        alert(t.caseDetail.deleteFileError);
       }
     }
   };
 
-  if (loading) return <div className="loading">Loading case details...</div>;
+  /**
+   * File categories are stored as snake_case values but displayed from the
+   * translation table. Anything unrecognised falls back to a readable form of
+   * the stored value rather than disappearing.
+   */
+  const categoryLabel = (value: string) => {
+    const map: Record<string, string> = {
+      evidence: t.caseDetail.categories.evidence,
+      court_call: t.caseDetail.categories.courtCall,
+      decision: t.caseDetail.categories.decisions,
+      personal_info: t.caseDetail.categories.personalInfo,
+      other: t.caseDetail.categories.other,
+    };
+    return map[value] || value.replace(/_/g, ' ');
+  };
+
+  /** Status badges read from the case form's shared status vocabulary. */
+  const statusLabel = (value?: string) => {
+    const map: Record<string, string> = {
+      active: t.caseForm.active,
+      pending: t.caseForm.pending,
+      closed: t.caseForm.closed,
+    };
+    return map[value || 'active'] || value || '';
+  };
+
+  const money = (value: number) => `${t.caseDetail.currency}${value.toFixed(2)}`;
+
+  if (loading) return <div className="loading">{t.caseDetail.loading}</div>;
   if (error) return <div className="alert alert-error">{error}</div>;
-  if (!caseData) return <div className="alert alert-error">Case not found</div>;
+  if (!caseData) return <div className="alert alert-error">{t.caseDetail.notFound}</div>;
 
   const totalExpenses = caseData?.expenses?.reduce((sum: number, exp) => sum + parseFloat(String(exp.amount || 0)), 0) || 0;
 
@@ -141,18 +171,20 @@ function CaseDetail() {
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
           <div>
             <h2 style={{ margin: 0, fontSize: '28px', fontWeight: '700', color: 'var(--text-primary)' }}>
-              Case #{caseData.id} - {caseData.request_type}
+              {t.caseDetail.caseLabel} #{caseData.id} — {caseData.request_type}
             </h2>
             <p style={{ margin: '8px 0 0 0', color: 'var(--text-tertiary)' }}>
-              Created: {caseData.created_at ? new Date(caseData.created_at).toLocaleString() : 'N/A'}
+              {t.caseDetail.created}: {caseData.created_at
+                ? new Date(caseData.created_at).toLocaleString()
+                : t.caseDetail.na}
             </p>
           </div>
           <div className="flex gap-10">
             <Link to={`/cases/${id}/edit`} className="btn btn-primary">
-              Edit Case
+              {t.caseDetail.edit}
             </Link>
-            <Link to="/" className="btn btn-secondary">
-              Back to List
+            <Link to="/cases" className="btn btn-secondary">
+              {t.caseDetail.backToList}
             </Link>
           </div>
         </div>
@@ -161,37 +193,37 @@ function CaseDetail() {
       {/* Case Info */}
       <div className="grid grid-cols-2">
         <div className="card">
-          <h3 style={{ marginBottom: '15px', fontSize: '18px', fontWeight: '600' }}>Case Information</h3>
+          <h3 style={{ marginBottom: '15px', fontSize: '18px', fontWeight: '600' }}>{t.caseDetail.overview}</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
             <div>
-              <strong>Status:</strong>{' '}
+              <strong>{t.caseDetail.status}:</strong>{' '}
               <span className={`badge ${
                 caseData.status === 'active' ? 'badge-success' :
                 caseData.status === 'closed' ? 'badge-danger' : 'badge-warning'
               }`}>
-                {caseData.status || 'active'}
+                {statusLabel(caseData.status)}
               </span>
             </div>
             <div>
-              <strong>Called for Court:</strong>{' '}
+              <strong>{t.caseDetail.calledForCourt}:</strong>{' '}
               {caseData.is_called_for_court ? (
-                <span className="badge badge-info">Yes</span>
+                <span className="badge badge-info">{t.caseDetail.yes}</span>
               ) : (
-                <span className="badge badge-warning">No</span>
+                <span className="badge badge-warning">{t.caseDetail.no}</span>
               )}
             </div>
             <div>
-              <strong>Total Expenses:</strong> ${totalExpenses.toFixed(2)}
+              <strong>{t.caseDetail.totalExpenses}:</strong> {money(totalExpenses)}
             </div>
           </div>
         </div>
 
         <div className="card">
-          <h3 style={{ marginBottom: '15px', fontSize: '18px', fontWeight: '600' }}>Quick Stats</h3>
+          <h3 style={{ marginBottom: '15px', fontSize: '18px', fontWeight: '600' }}>{t.caseDetail.quickStats}</h3>
           <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-            <div><strong>Court Dates:</strong> {caseData.court_dates?.length || 0}</div>
-            <div><strong>Expenses:</strong> {caseData.expenses?.length || 0}</div>
-            <div><strong>Files:</strong> {caseData.files?.length || 0}</div>
+            <div><strong>{t.caseDetail.courtDates}:</strong> {caseData.court_dates?.length || 0}</div>
+            <div><strong>{t.caseDetail.expenses}:</strong> {caseData.expenses?.length || 0}</div>
+            <div><strong>{t.caseDetail.files}:</strong> {caseData.files?.length || 0}</div>
           </div>
         </div>
       </div>
@@ -199,28 +231,28 @@ function CaseDetail() {
       {/* Applicant & Wanted */}
       <div className="grid grid-cols-2">
         <div className="card">
-          <h3 style={{ marginBottom: '15px', fontSize: '18px', fontWeight: '600' }}>Applicant</h3>
+          <h3 style={{ marginBottom: '15px', fontSize: '18px', fontWeight: '600' }}>{t.caseDetail.applicant}</h3>
           {caseData.applicants?.[0] ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div><strong>Name:</strong> {caseData.applicants[0].name}</div>
-              <div><strong>Phone:</strong> {caseData.applicants[0].phone_number || 'N/A'}</div>
-              <div><strong>Address:</strong> {caseData.applicants[0].address || 'N/A'}</div>
+              <div><strong>{t.caseDetail.name}:</strong> {caseData.applicants[0].name}</div>
+              <div><strong>{t.caseDetail.phone}:</strong> <span dir="ltr">{caseData.applicants[0].phone_number || t.caseDetail.na}</span></div>
+              <div><strong>{t.caseDetail.address}:</strong> {caseData.applicants[0].address || t.caseDetail.na}</div>
             </div>
           ) : (
-            <p style={{ color: 'var(--text-tertiary)' }}>No applicant information</p>
+            <p style={{ color: 'var(--text-tertiary)' }}>{t.caseDetail.noApplicant}</p>
           )}
         </div>
 
         <div className="card">
-          <h3 style={{ marginBottom: '15px', fontSize: '18px', fontWeight: '600' }}>Wanted/Defendant</h3>
+          <h3 style={{ marginBottom: '15px', fontSize: '18px', fontWeight: '600' }}>{t.caseDetail.wanted}</h3>
           {caseData.wanted?.[0] ? (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-              <div><strong>Name:</strong> {caseData.wanted[0].name}</div>
-              <div><strong>Phone:</strong> {caseData.wanted[0].phone_number || 'N/A'}</div>
-              <div><strong>Address:</strong> {caseData.wanted[0].address || 'N/A'}</div>
+              <div><strong>{t.caseDetail.name}:</strong> {caseData.wanted[0].name}</div>
+              <div><strong>{t.caseDetail.phone}:</strong> <span dir="ltr">{caseData.wanted[0].phone_number || t.caseDetail.na}</span></div>
+              <div><strong>{t.caseDetail.address}:</strong> {caseData.wanted[0].address || t.caseDetail.na}</div>
             </div>
           ) : (
-            <p style={{ color: 'var(--text-tertiary)' }}>No wanted information</p>
+            <p style={{ color: 'var(--text-tertiary)' }}>{t.caseDetail.noWanted}</p>
           )}
         </div>
       </div>
@@ -228,12 +260,12 @@ function CaseDetail() {
       {/* Court Dates */}
       <div className="card">
         <div className="flex justify-between align-center mb-20">
-          <h3 style={{ fontSize: '18px', fontWeight: '600' }}>Court Dates</h3>
+          <h3 style={{ fontSize: '18px', fontWeight: '600' }}>{t.caseDetail.courtDates}</h3>
           <button
             onClick={() => setShowCourtDateForm(!showCourtDateForm)}
             className="btn btn-sm btn-primary"
           >
-            + Add Court Date
+            + {t.caseDetail.addCourtDate}
           </button>
         </div>
 
@@ -241,7 +273,7 @@ function CaseDetail() {
           <form onSubmit={handleAddCourtDate} className="card" style={{ background: 'var(--bg-tertiary)', marginBottom: '20px' }}>
             <div className="grid grid-cols-2">
               <div className="form-group">
-                <label>Interview Date *</label>
+                <label>{t.caseDetail.interviewDate} <span className="required-mark" aria-hidden="true">*</span></label>
                 <input
                   type="datetime-local"
                   className="form-control"
@@ -251,23 +283,24 @@ function CaseDetail() {
                 />
               </div>
               <div className="form-group">
-                <label>Notes</label>
+                <label>{t.caseDetail.notes}</label>
                 <input
                   type="text"
                   className="form-control"
+                  placeholder={t.caseDetail.notesPlaceholder}
                   value={courtDate.notes}
                   onChange={(e) => setCourtDate({ ...courtDate, notes: e.target.value })}
                 />
               </div>
             </div>
             <div className="flex gap-10">
-              <button type="submit" className="btn btn-sm btn-success">Add</button>
+              <button type="submit" className="btn btn-sm btn-success">{t.caseDetail.add}</button>
               <button
                 type="button"
                 className="btn btn-sm btn-secondary"
                 onClick={() => setShowCourtDateForm(false)}
               >
-                Cancel
+                {t.common.cancel}
               </button>
             </div>
           </form>
@@ -278,22 +311,22 @@ function CaseDetail() {
             <table className="table">
               <thead>
                 <tr>
-                  <th>Date & Time</th>
-                  <th>Notes</th>
-                  <th>Actions</th>
+                  <th>{t.caseDetail.dateTime}</th>
+                  <th>{t.caseDetail.notes}</th>
+                  <th>{t.caseDetail.actions}</th>
                 </tr>
               </thead>
               <tbody>
                 {caseData.court_dates.map((date) => (
                   <tr key={date.id}>
                     <td>{new Date(date.interview_date).toLocaleString()}</td>
-                    <td>{date.notes || 'N/A'}</td>
+                    <td>{date.notes || t.caseDetail.na}</td>
                     <td>
                       <button
                         onClick={() => date.id && handleDeleteCourtDate(date.id)}
                         className="btn btn-sm btn-danger"
                       >
-                        Delete
+                        {t.caseDetail.delete}
                       </button>
                     </td>
                   </tr>
@@ -302,19 +335,21 @@ function CaseDetail() {
             </table>
           </div>
         ) : (
-          <p style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: '20px' }}>No court dates scheduled</p>
+          <p style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: '20px' }}>{t.caseDetail.noCourtDates}</p>
         )}
       </div>
 
       {/* Expenses */}
       <div className="card">
         <div className="flex justify-between align-center mb-20">
-          <h3 style={{ fontSize: '18px', fontWeight: '600' }}>Expenses (Total: ${totalExpenses.toFixed(2)})</h3>
+          <h3 style={{ fontSize: '18px', fontWeight: '600' }}>
+            {t.caseDetail.expenses} ({t.caseDetail.total}: {money(totalExpenses)})
+          </h3>
           <button
             onClick={() => setShowExpenseForm(!showExpenseForm)}
             className="btn btn-sm btn-primary"
           >
-            + Add Expense
+            + {t.caseDetail.addExpense}
           </button>
         </div>
 
@@ -322,28 +357,31 @@ function CaseDetail() {
           <form onSubmit={handleAddExpense} className="card" style={{ background: 'var(--bg-tertiary)', marginBottom: '20px' }}>
             <div className="grid grid-cols-2">
               <div className="form-group">
-                <label>Expense Name *</label>
+                <label>{t.caseDetail.expenseName} <span className="required-mark" aria-hidden="true">*</span></label>
                 <input
                   type="text"
                   className="form-control"
+                  placeholder={t.caseDetail.expenseNamePlaceholder}
                   value={expense.expense_name}
                   onChange={(e) => setExpense({ ...expense, expense_name: e.target.value })}
                   required
                 />
               </div>
               <div className="form-group">
-                <label>Amount *</label>
+                <label>{t.caseDetail.amount} <span className="required-mark" aria-hidden="true">*</span></label>
                 <input
                   type="number"
                   step="0.01"
+                  dir="ltr"
                   className="form-control"
+                  placeholder={t.caseDetail.amountPlaceholder}
                   value={expense.amount}
                   onChange={(e) => setExpense({ ...expense, amount: e.target.value })}
                   required
                 />
               </div>
               <div className="form-group">
-                <label>Date *</label>
+                <label>{t.caseDetail.expenseDate} <span className="required-mark" aria-hidden="true">*</span></label>
                 <input
                   type="date"
                   className="form-control"
@@ -353,23 +391,24 @@ function CaseDetail() {
                 />
               </div>
               <div className="form-group">
-                <label>Note</label>
+                <label>{t.caseDetail.note}</label>
                 <input
                   type="text"
                   className="form-control"
+                  placeholder={t.caseDetail.notePlaceholder}
                   value={expense.note}
                   onChange={(e) => setExpense({ ...expense, note: e.target.value })}
                 />
               </div>
             </div>
             <div className="flex gap-10">
-              <button type="submit" className="btn btn-sm btn-success">Add</button>
+              <button type="submit" className="btn btn-sm btn-success">{t.caseDetail.add}</button>
               <button
                 type="button"
                 className="btn btn-sm btn-secondary"
                 onClick={() => setShowExpenseForm(false)}
               >
-                Cancel
+                {t.common.cancel}
               </button>
             </div>
           </form>
@@ -380,26 +419,26 @@ function CaseDetail() {
             <table className="table">
               <thead>
                 <tr>
-                  <th>Name</th>
-                  <th>Amount</th>
-                  <th>Date</th>
-                  <th>Note</th>
-                  <th>Actions</th>
+                  <th>{t.caseDetail.name}</th>
+                  <th>{t.caseDetail.amount}</th>
+                  <th>{t.caseDetail.expenseDate}</th>
+                  <th>{t.caseDetail.note}</th>
+                  <th>{t.caseDetail.actions}</th>
                 </tr>
               </thead>
               <tbody>
                 {caseData.expenses.map((exp) => (
                   <tr key={exp.id}>
                     <td>{exp.expense_name}</td>
-                    <td>${parseFloat(String(exp.amount)).toFixed(2)}</td>
+                    <td dir="ltr">{money(parseFloat(String(exp.amount)))}</td>
                     <td>{new Date(exp.expense_date).toLocaleDateString()}</td>
-                    <td>{exp.note || 'N/A'}</td>
+                    <td>{exp.note || t.caseDetail.na}</td>
                     <td>
                       <button
                         onClick={() => exp.id && handleDeleteExpense(exp.id)}
                         className="btn btn-sm btn-danger"
                       >
-                        Delete
+                        {t.caseDetail.delete}
                       </button>
                     </td>
                   </tr>
@@ -408,19 +447,19 @@ function CaseDetail() {
             </table>
           </div>
         ) : (
-          <p style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: '20px' }}>No expenses recorded</p>
+          <p style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: '20px' }}>{t.caseDetail.noExpenses}</p>
         )}
       </div>
 
       {/* Files */}
       <div className="card">
         <div className="flex justify-between align-center mb-20">
-          <h3 style={{ fontSize: '18px', fontWeight: '600' }}>Files & Attachments</h3>
+          <h3 style={{ fontSize: '18px', fontWeight: '600' }}>{t.caseDetail.files}</h3>
           <button
             onClick={() => setShowFileUpload(!showFileUpload)}
             className="btn btn-sm btn-primary"
           >
-            + Upload File
+            + {t.caseDetail.uploadFile}
           </button>
         </div>
 
@@ -428,7 +467,7 @@ function CaseDetail() {
           <form onSubmit={handleFileUpload} className="card" style={{ background: 'var(--bg-tertiary)', marginBottom: '20px' }}>
             <div className="grid grid-cols-2">
               <div className="form-group">
-                <label>File *</label>
+                <label>{t.caseDetail.fileLabel} <span className="required-mark" aria-hidden="true">*</span></label>
                 <input
                   type="file"
                   className="form-control"
@@ -437,29 +476,29 @@ function CaseDetail() {
                 />
               </div>
               <div className="form-group">
-                <label>Category *</label>
+                <label>{t.caseDetail.category} <span className="required-mark" aria-hidden="true">*</span></label>
                 <select
                   className="form-control"
                   value={fileCategory}
                   onChange={(e) => setFileCategory(e.target.value)}
                   required
                 >
-                  <option value="evidence">Evidence</option>
-                  <option value="court_call">Court Call for Wanted</option>
-                  <option value="decision">Decision</option>
-                  <option value="personal_info">Personal Information</option>
-                  <option value="other">Other</option>
+                  <option value="evidence">{t.caseDetail.categories.evidence}</option>
+                  <option value="court_call">{t.caseDetail.categories.courtCall}</option>
+                  <option value="decision">{t.caseDetail.categories.decisions}</option>
+                  <option value="personal_info">{t.caseDetail.categories.personalInfo}</option>
+                  <option value="other">{t.caseDetail.categories.other}</option>
                 </select>
               </div>
             </div>
             <div className="flex gap-10">
-              <button type="submit" className="btn btn-sm btn-success">Upload</button>
+              <button type="submit" className="btn btn-sm btn-success">{t.caseDetail.upload}</button>
               <button
                 type="button"
                 className="btn btn-sm btn-secondary"
                 onClick={() => setShowFileUpload(false)}
               >
-                Cancel
+                {t.common.cancel}
               </button>
             </div>
           </form>
@@ -470,11 +509,11 @@ function CaseDetail() {
             <table className="table">
               <thead>
                 <tr>
-                  <th>File Name</th>
-                  <th>Category</th>
-                  <th>Type</th>
-                  <th>Uploaded</th>
-                  <th>Actions</th>
+                  <th>{t.caseDetail.fileName}</th>
+                  <th>{t.caseDetail.category}</th>
+                  <th>{t.caseDetail.fileType}</th>
+                  <th>{t.caseDetail.uploadedAt}</th>
+                  <th>{t.caseDetail.actions}</th>
                 </tr>
               </thead>
               <tbody>
@@ -483,11 +522,13 @@ function CaseDetail() {
                     <td>{file.file_name}</td>
                     <td>
                       <span className="badge badge-info">
-                        {file.category.replace('_', ' ')}
+                        {categoryLabel(file.category)}
                       </span>
                     </td>
                     <td>{file.file_type}</td>
-                    <td>{file.uploaded_at ? new Date(file.uploaded_at).toLocaleDateString() : 'N/A'}</td>
+                    <td>{file.uploaded_at
+                      ? new Date(file.uploaded_at).toLocaleDateString()
+                      : t.caseDetail.na}</td>
                     <td>
                       <div className="flex gap-10">
                         <a
@@ -496,13 +537,13 @@ function CaseDetail() {
                           rel="noreferrer"
                           className="btn btn-sm btn-secondary"
                         >
-                          Download
+                          {t.caseDetail.download}
                         </a>
                         <button
                           onClick={() => file.id && handleDeleteFile(file.id)}
                           className="btn btn-sm btn-danger"
                         >
-                          Delete
+                          {t.caseDetail.delete}
                         </button>
                       </div>
                     </td>
@@ -512,7 +553,7 @@ function CaseDetail() {
             </table>
           </div>
         ) : (
-          <p style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: '20px' }}>No files uploaded</p>
+          <p style={{ color: 'var(--text-tertiary)', textAlign: 'center', padding: '20px' }}>{t.caseDetail.noFiles}</p>
         )}
       </div>
     </div>
