@@ -117,18 +117,60 @@ class Case {
     return result.rows[0];
   }
 
+  /**
+   * Writes the single applicant/wanted row a case carries, updating the
+   * existing row or inserting one if the case has none yet.
+   *
+   * The schema allows several rows per case, but a case is created with at
+   * most one of each and the edit form only ever shows the first. The oldest
+   * row is therefore the one the form loaded, so that is the one written back.
+   */
+  static async upsertParty(client, table, caseId, party) {
+    // Whitelisted rather than interpolated blindly: the value is a literal
+    // chosen here, never anything that reached us from a request.
+    if (table !== 'applicants' && table !== 'wanted') {
+      throw new Error(`Unsupported party table: ${table}`);
+    }
+    // name is NOT NULL, and an absent party means "leave this one alone".
+    if (!party || !party.name) return;
+
+    const existing = await client.query(
+      `SELECT id FROM ${table} WHERE case_id = $1 ORDER BY id LIMIT 1`,
+      [caseId]
+    );
+
+    const values = [party.name, party.phone_number || null, party.address || null];
+
+    if (existing.rows.length > 0) {
+      await client.query(
+        `UPDATE ${table} SET name = $1, phone_number = $2, address = $3 WHERE id = $4`,
+        [...values, existing.rows[0].id]
+      );
+    } else {
+      await client.query(
+        `INSERT INTO ${table} (case_id, name, phone_number, address) VALUES ($1, $2, $3, $4)`,
+        [caseId, ...values]
+      );
+    }
+  }
+
   static async update(id, caseData) {
-    const { request_type, is_called_for_court, status } = caseData;
+    const { request_type, is_called_for_court, status, applicant, wanted } = caseData;
     const client = await pool.connect();
-    
+
     try {
       await client.query('BEGIN');
-      
+
       await client.query(
         'UPDATE cases SET request_type = $1, is_called_for_court = $2, status = $3, updated_at = CURRENT_TIMESTAMP WHERE id = $4',
         [request_type, is_called_for_court, status, id]
       );
-      
+
+      // Previously omitted entirely, so edits to either party were accepted
+      // with a 200 and silently thrown away.
+      await this.upsertParty(client, 'applicants', id, applicant);
+      await this.upsertParty(client, 'wanted', id, wanted);
+
       await client.query('COMMIT');
       return await this.findById(id);
     } catch (error) {
