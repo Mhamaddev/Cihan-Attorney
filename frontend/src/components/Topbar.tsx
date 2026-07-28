@@ -9,12 +9,13 @@ import {
   ScaleIcon,
   ExclamationTriangleIcon,
   CheckCircleIcon,
+  ClockIcon,
   ArrowRightOnRectangleIcon
 } from '@heroicons/react/24/outline';
 import { useLanguage } from '../i18n/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
-import { useNotifications } from '../hooks/useNotifications';
+import { useNotifications, isUrgent } from '../hooks/useNotifications';
 import type { AppNotification } from '../hooks/useNotifications';
 
 interface TopbarProps {
@@ -29,7 +30,7 @@ function Topbar({ toggleSidebar }: TopbarProps) {
   const { language, setLanguage, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
-  const { notifications, count, reload } = useNotifications();
+  const { notifications, count, loading: notificationsLoading, reload, markAllSeen } = useNotifications();
   const navigate = useNavigate();
   const headerRef = useRef<HTMLElement>(null);
 
@@ -61,22 +62,58 @@ function Topbar({ toggleSidebar }: TopbarProps) {
     navigate('/login');
   };
 
-  /** "3 days late" / "Today" / "Tomorrow" / "In 4 days". */
-  const relativeDay = (daysAway: number) => {
-    if (daysAway < 0) return t.topbar.daysLate.replace('{n}', String(Math.abs(daysAway)));
+  /**
+   * A passed date reads as elapsed time ("Yesterday"), while an outstanding
+   * task reads as lateness ("3 days late") -- the same negative number, but a
+   * missed hearing is history and an overdue task is a debt.
+   */
+  const relativeDay = (n: AppNotification) => {
+    const { daysAway, kind } = n;
     if (daysAway === 0) return t.topbar.today;
     if (daysAway === 1) return t.topbar.tomorrow;
-    return t.topbar.inDays.replace('{n}', String(daysAway));
+    if (daysAway > 1) return t.topbar.inDays.replace('{n}', String(daysAway));
+
+    const ago = Math.abs(daysAway);
+    if (kind === 'todoOverdue') return t.topbar.daysLate.replace('{n}', String(ago));
+    return ago === 1 ? t.topbar.yesterday : t.topbar.daysAgo.replace('{n}', String(ago));
   };
 
   const notificationMeta = (kind: AppNotification['kind']) => {
     if (kind === 'court') {
       return { Icon: ScaleIcon, color: 'var(--primary-color)', label: t.topbar.courtHearing };
     }
+    if (kind === 'courtPassed') {
+      return { Icon: ClockIcon, color: 'var(--warning-color)', label: t.topbar.hearingPassed };
+    }
     if (kind === 'todoOverdue') {
-      return { Icon: ExclamationTriangleIcon, color: '#dc2626', label: t.topbar.taskOverdue };
+      return { Icon: ExclamationTriangleIcon, color: 'var(--danger-color)', label: t.topbar.taskOverdue };
     }
     return { Icon: CheckCircleIcon, color: 'var(--text-secondary)', label: t.topbar.taskDueToday };
+  };
+
+  const urgent = notifications.filter(isUrgent);
+  const upcoming = notifications.filter((n) => !isUrgent(n));
+
+  const renderNotification = (n: AppNotification) => {
+    const { Icon, color, label } = notificationMeta(n.kind);
+    return (
+      <button
+        key={n.id}
+        className={`notification-row${n.isNew ? ' is-new' : ''}`}
+        onClick={() => {
+          navigate(n.href);
+          setOpenMenu(null);
+        }}
+      >
+        <Icon style={{ width: '20px', height: '20px', color, flexShrink: 0, marginTop: '2px' }} />
+        <span className="notification-body">
+          <span className="notification-label" style={{ color }}>{label}</span>
+          <span className="notification-title">{n.title}</span>
+          <span className="notification-when">{relativeDay(n)}</span>
+        </span>
+        {n.isNew && <span className="notification-dot" title={t.topbar.newItem} />}
+      </button>
+    );
   };
 
   const languages = [
@@ -183,8 +220,12 @@ function Topbar({ toggleSidebar }: TopbarProps) {
           <button
             className="topbar-btn"
             onClick={() => {
-              // Refresh on open so the list is not whatever was true at page load.
-              if (openMenu !== 'notifications') reload();
+              if (openMenu !== 'notifications') {
+                // Refresh on open so the list is not whatever was true at page
+                // load, and treat opening as acknowledgement of what is there.
+                reload();
+                markAllSeen();
+              }
               toggleMenu('notifications');
             }}
             aria-label={t.topbar.notifications}
@@ -197,68 +238,37 @@ function Topbar({ toggleSidebar }: TopbarProps) {
             )}
           </button>
 
+          {/* Announced rather than drawn: the badge is a number with no label,
+              so on its own a screen reader reports only "3". */}
+          <span className="sr-only" role="status" aria-live="polite">
+            {count > 0 ? t.topbar.unreadCount.replace('{n}', String(count)) : ''}
+          </span>
+
           {openMenu === 'notifications' && (
             <div className="topbar-dropdown topbar-dropdown--notifications">
               <div className="topbar-dropdown-header">
                 <h4>{t.topbar.notifications}</h4>
               </div>
-              <div className="topbar-dropdown-body" style={{ maxHeight: '380px', overflowY: 'auto' }}>
+              <div className="topbar-dropdown-body notification-list">
                 {notifications.length === 0 ? (
-                  <div style={{
-                    padding: '24px 16px',
-                    textAlign: 'center',
-                    color: 'var(--text-tertiary)',
-                    fontSize: '14px'
-                  }}>
-                    {t.topbar.noNotifications}
+                  <div className="notification-empty">
+                    {notificationsLoading ? t.common.loading : t.topbar.noNotifications}
                   </div>
                 ) : (
-                  notifications.map((n) => {
-                    const { Icon, color, label } = notificationMeta(n.kind);
-                    return (
-                      <button
-                        key={n.id}
-                        onClick={() => {
-                          navigate(n.href);
-                          setOpenMenu(null);
-                        }}
-                        style={{
-                          width: '100%',
-                          padding: '12px 16px',
-                          border: 'none',
-                          borderBottom: '1px solid var(--border-color)',
-                          background: 'transparent',
-                          display: 'flex',
-                          alignItems: 'flex-start',
-                          gap: '12px',
-                          cursor: 'pointer',
-                          textAlign: 'start',
-                          color: 'var(--text-primary)',
-                          transition: 'background 0.2s'
-                        }}
-                        onMouseEnter={(e) => e.currentTarget.style.background = 'var(--hover-bg)'}
-                        onMouseLeave={(e) => e.currentTarget.style.background = 'transparent'}
-                      >
-                        <Icon style={{ width: '20px', height: '20px', color, flexShrink: 0, marginTop: '2px' }} />
-                        <span style={{ display: 'flex', flexDirection: 'column', gap: '2px', minWidth: 0 }}>
-                          <span style={{ fontSize: '12px', fontWeight: '600', color }}>
-                            {label}
-                          </span>
-                          <span style={{
-                            fontSize: '14px',
-                            overflow: 'hidden',
-                            textOverflow: 'ellipsis',
-                            whiteSpace: 'nowrap'
-                          }}>
-                            {n.title}
-                          </span>
-                          <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                            {relativeDay(n.daysAway)}
-                          </span>
-                        </span>
-                      </button>
-                    );
-                  })
+                  <>
+                    {urgent.length > 0 && (
+                      <>
+                        <p className="notification-group">{t.topbar.needsAttention}</p>
+                        {urgent.map(renderNotification)}
+                      </>
+                    )}
+                    {upcoming.length > 0 && (
+                      <>
+                        <p className="notification-group">{t.topbar.comingUp}</p>
+                        {upcoming.map(renderNotification)}
+                      </>
+                    )}
+                  </>
                 )}
               </div>
             </div>

@@ -1,119 +1,121 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { getAllCases, getTodos } from '../services/api';
+import { deriveNotifications, badgeCount } from './notificationRules';
+import type { NotificationSeed } from './notificationRules';
+
+export type { NotificationKind, NotificationSeed } from './notificationRules';
+export { isUrgent } from './notificationRules';
 
 /**
  * Notifications are derived on the client from data the app already fetches --
- * there is no notifications table or endpoint. That keeps this frontend-only:
- * no backend deploy, no PM2 restart.
+ * there is no notifications table or endpoint. The two list calls are
+ * request-coalesced in the api layer, so mounting alongside a page that wants
+ * the same data costs one request rather than two.
+ *
+ * The rules themselves live in ./notificationRules so they stay testable.
  */
 
-export type NotificationKind = 'court' | 'todoOverdue' | 'todoToday';
-
-export interface AppNotification {
-  id: string;
-  kind: NotificationKind;
-  /** Case name / todo title -- rendered as-is, may be Kurdish or Arabic. */
-  title: string;
-  /** The date the item is about, for display. */
-  date: Date;
-  /** Whole days from today. Negative means overdue. */
-  daysAway: number;
-  /** Where clicking the row should navigate. */
-  href: string;
+export interface AppNotification extends NotificationSeed {
+  /** Not yet acknowledged by opening the bell. */
+  isNew: boolean;
 }
 
-/** Court dates this many days ahead (inclusive) are worth surfacing. */
-const COURT_LOOKAHEAD_DAYS = 7;
+/** Re-derive this often so a tab left open does not go stale. */
+const POLL_INTERVAL_MS = 5 * 60 * 1000;
 
-/** Midnight today, so comparisons are by calendar day rather than by clock. */
-function startOfToday(): Date {
-  const d = new Date();
-  d.setHours(0, 0, 0, 0);
-  return d;
+const SEEN_STORAGE_KEY = 'seenNotifications';
+
+function readSeen(): string[] {
+  try {
+    const raw = localStorage.getItem(SEEN_STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed.filter((v) => typeof v === 'string') : [];
+  } catch {
+    // Corrupt or unavailable storage must not take the header down.
+    return [];
+  }
 }
 
-function daysBetween(from: Date, to: Date): number {
-  const a = new Date(to.getFullYear(), to.getMonth(), to.getDate()).getTime();
-  const b = new Date(from.getFullYear(), from.getMonth(), from.getDate()).getTime();
-  return Math.round((a - b) / 86400000);
-}
-
-/**
- * `due_date` arrives as a plain YYYY-MM-DD string. Passing that to `new Date()`
- * parses it as UTC midnight, which lands on the previous day for anyone behind
- * UTC and would mark a todo overdue a day early. Split it and build a local date.
- */
-function parseDueDate(value: string): Date | null {
-  const [y, m, d] = value.split('-').map(Number);
-  if (!y || !m || !d) return null;
-  return new Date(y, m - 1, d);
+function writeSeen(ids: string[]) {
+  try {
+    localStorage.setItem(SEEN_STORAGE_KEY, JSON.stringify(ids));
+  } catch {
+    // Private browsing and quota errors are not worth surfacing here.
+  }
 }
 
 export function useNotifications() {
-  const [notifications, setNotifications] = useState<AppNotification[]>([]);
+  const [items, setItems] = useState<NotificationSeed[]>([]);
+  const [seen, setSeen] = useState<string[]>(readSeen);
   const [loading, setLoading] = useState(true);
+  // Avoids a setState on an unmounted component if a poll lands after teardown.
+  const alive = useRef(true);
+  // markAllSeen is invoked right after a reload is kicked off, so reading
+  // `items` from its closure would acknowledge the pre-refresh list.
+  const latestItems = useRef<NotificationSeed[]>([]);
 
   const load = useCallback(async () => {
     try {
       const [cases, todos] = await Promise.all([getAllCases(), getTodos()]);
-      const today = startOfToday();
-      const items: AppNotification[] = [];
+      if (!alive.current) return;
 
-      for (const c of cases) {
-        for (const cd of c.court_dates ?? []) {
-          if (!cd.interview_date) continue;
-          const when = new Date(cd.interview_date);
-          if (Number.isNaN(when.getTime())) continue;
+      const next = deriveNotifications(cases, todos);
+      latestItems.current = next;
+      setItems(next);
 
-          const daysAway = daysBetween(today, when);
-          // Past hearings are history, not something to act on.
-          if (daysAway < 0 || daysAway > COURT_LOOKAHEAD_DAYS) continue;
-
-          const who = c.applicants?.[0]?.name?.trim();
-          items.push({
-            id: `court-${c.id}-${cd.id ?? when.getTime()}`,
-            kind: 'court',
-            title: who ? `#${c.id} — ${who}` : `#${c.id} — ${c.request_type}`,
-            date: when,
-            daysAway,
-            href: `/cases/${c.id}`,
-          });
-        }
-      }
-
-      for (const todo of todos) {
-        if (todo.is_completed || !todo.due_date) continue;
-        const due = parseDueDate(todo.due_date);
-        if (!due) continue;
-
-        const daysAway = daysBetween(today, due);
-        // Only what needs attention now: overdue, or due today.
-        if (daysAway > 0) continue;
-
-        items.push({
-          id: `todo-${todo.id}`,
-          kind: daysAway < 0 ? 'todoOverdue' : 'todoToday',
-          title: todo.title,
-          date: due,
-          daysAway,
-          href: '/todos',
-        });
-      }
-
-      // Most urgent first: furthest overdue at the top, then today, then soonest.
-      items.sort((a, b) => a.daysAway - b.daysAway || a.title.localeCompare(b.title));
-      setNotifications(items);
+      // Forget acknowledgements for things that no longer exist, otherwise the
+      // stored list grows without bound across every case ever opened.
+      setSeen((prev) => {
+        const live = new Set(next.map((n) => n.id));
+        const pruned = prev.filter((id) => live.has(id));
+        if (pruned.length === prev.length) return prev;
+        writeSeen(pruned);
+        return pruned;
+      });
     } catch {
       // A failed poll should not blank a list the user is reading, nor surface
       // an error in the header. Keep whatever was last loaded.
     } finally {
-      setLoading(false);
+      if (alive.current) setLoading(false);
     }
   }, []);
 
   useEffect(() => {
+    alive.current = true;
     load();
+
+    // Skip work while the tab is hidden, and refresh on return, so coming back
+    // to a tab left open overnight shows today rather than yesterday.
+    const tick = () => {
+      if (document.visibilityState === 'visible') load();
+    };
+    const timer = setInterval(tick, POLL_INTERVAL_MS);
+    window.addEventListener('focus', tick);
+    document.addEventListener('visibilitychange', tick);
+
+    return () => {
+      alive.current = false;
+      clearInterval(timer);
+      window.removeEventListener('focus', tick);
+      document.removeEventListener('visibilitychange', tick);
+    };
   }, [load]);
 
-  return { notifications, count: notifications.length, loading, reload: load };
+  const notifications = useMemo<AppNotification[]>(() => {
+    const seenSet = new Set(seen);
+    return items.map((n) => ({ ...n, isNew: !seenSet.has(n.id) }));
+  }, [items, seen]);
+
+  const count = useMemo(() => badgeCount(items, new Set(seen)), [items, seen]);
+
+  /** Called when the panel opens: everything on screen has now been seen. */
+  const markAllSeen = useCallback(() => {
+    setSeen((prev) => {
+      const merged = Array.from(new Set([...prev, ...latestItems.current.map((n) => n.id)]));
+      writeSeen(merged);
+      return merged;
+    });
+  }, []);
+
+  return { notifications, count, loading, reload: load, markAllSeen };
 }

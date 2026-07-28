@@ -2,6 +2,26 @@ import type { Case, CreateCaseData, CourtDate, Expense, CaseFile, Todo, CreateTo
 
 const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
+const inFlight = new Map<string, Promise<unknown>>();
+
+/**
+ * Shares a single in-flight request between callers that ask at the same
+ * moment. The notification bell and the page underneath it both mount on load
+ * and would otherwise each pull the entire case list -- which carries every
+ * applicant, court date, expense and file -- twice over.
+ *
+ * Deliberately NOT a cache: the entry is dropped the moment the request
+ * settles, so no caller can ever read a stale list after a create or edit.
+ */
+function coalesce<T>(key: string, request: () => Promise<T>): Promise<T> {
+  const pending = inFlight.get(key) as Promise<T> | undefined;
+  if (pending) return pending;
+
+  const promise = request().finally(() => inFlight.delete(key));
+  inFlight.set(key, promise);
+  return promise;
+}
+
 // Auth APIs
 export interface LoginResponse {
   token: string;
@@ -152,16 +172,17 @@ export const changePassword = async (currentPassword: string, newPassword: strin
 };
 
 // Cases
-export const getAllCases = async (): Promise<Case[]> => {
-  const token = localStorage.getItem('token');
-  const response = await fetch(`${API_URL}/cases`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+export const getAllCases = (): Promise<Case[]> =>
+  coalesce('cases', async () => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/cases`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (!response.ok) throw new Error('Failed to fetch cases');
+    return response.json();
   });
-  if (!response.ok) throw new Error('Failed to fetch cases');
-  return response.json();
-};
 
 export const getCaseById = async (id: string | number): Promise<Case> => {
   const token = localStorage.getItem('token');
@@ -301,16 +322,17 @@ export const deleteFile = async (caseId: string | number, fileId: string | numbe
 };
 
 // Todos
-export const getTodos = async (): Promise<Todo[]> => {
-  const token = localStorage.getItem('token');
-  const response = await fetch(`${API_URL}/todos`, {
-    headers: {
-      'Authorization': `Bearer ${token}`
-    }
+export const getTodos = (): Promise<Todo[]> =>
+  coalesce('todos', async () => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/todos`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (!response.ok) throw new Error('Failed to fetch todos');
+    return response.json();
   });
-  if (!response.ok) throw new Error('Failed to fetch todos');
-  return response.json();
-};
 
 export const createTodo = async (todoData: CreateTodoData): Promise<Todo> => {
   const token = localStorage.getItem('token');

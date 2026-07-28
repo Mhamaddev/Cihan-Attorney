@@ -316,6 +316,13 @@ export const translations = {
       tomorrow: 'Tomorrow',
       inDays: 'In {n} days',
       daysLate: '{n} days late',
+      hearingPassed: 'Hearing passed',
+      yesterday: 'Yesterday',
+      daysAgo: '{n} days ago',
+      needsAttention: 'Needs attention',
+      comingUp: 'Coming up',
+      newItem: 'New',
+      unreadCount: '{n} unread notifications',
     },
     
     // Common
@@ -650,6 +657,13 @@ export const translations = {
       tomorrow: 'سبەینێ',
       inDays: 'لە {n} ڕۆژدا',
       daysLate: '{n} ڕۆژ دواکەوتووە',
+      hearingPassed: 'دانیشتنەکە تێپەڕی',
+      yesterday: 'دوێنێ',
+      daysAgo: 'پێش {n} ڕۆژ',
+      needsAttention: 'پێویستی بە سەرنجە',
+      comingUp: 'بەم زووانە',
+      newItem: 'نوێ',
+      unreadCount: '{n} ئاگادارکردنەوەی نەخوێندراوە',
     },
     
     // Common
@@ -984,6 +998,13 @@ export const translations = {
       tomorrow: 'غداً',
       inDays: 'خلال {n} أيام',
       daysLate: 'متأخرة {n} أيام',
+      hearingPassed: 'انتهت الجلسة',
+      yesterday: 'أمس',
+      daysAgo: 'قبل {n} أيام',
+      needsAttention: 'يتطلب انتباهك',
+      comingUp: 'قادم',
+      newItem: 'جديد',
+      unreadCount: '{n} إشعارات غير مقروءة',
     },
     
     // Common
