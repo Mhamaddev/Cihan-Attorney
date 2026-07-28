@@ -6,7 +6,11 @@
   "type": "module",
   "scripts": {
     "start": "node src/server.js",
-    "dev": "nodemon src/server.js"
+    "dev": "nodemon src/server.js",
+    "test": "npm run test:cases && npm run test:activity && npm run test:audit",
+    "test:cases": "node src/models/__tests__/caseUpdate.test.mjs",
+    "test:activity": "node src/models/__tests__/activity.test.mjs",
+    "test:audit": "node src/controllers/__tests__/caseAudit.test.mjs"
   },
   "keywords": [
     "lawyer",
@@ -23,7 +27,7 @@
     "express-validator": "^7.0.1",
     "jsonwebtoken": "^9.0.3",
     "multer": "^1.4.5-lts.1",
-    "pg": "^8.11.3"
+    "pg": "^8.19.0"
   },
   "devDependencies": {
     "nodemon": "^3.0.2"

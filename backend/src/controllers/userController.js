@@ -1,5 +1,6 @@
 import bcrypt from 'bcryptjs';
 import User from '../models/User.js';
+import { logActivity } from '../utils/activityLogger.js';
 
 export const getAllUsers = async (req, res) => {
   try {
@@ -56,6 +57,13 @@ export const createUser = async (req, res) => {
     // Create user
     const user = await User.create(username, email, hashedPassword, fullName, role || 'lawyer');
 
+    logActivity(req, {
+      action: 'create',
+      entityType: 'user',
+      entityId: user.id,
+      summary: user.username,
+    });
+
     res.status(201).json({
       message: 'User created successfully',
       user
@@ -96,6 +104,24 @@ export const updateUser = async (req, res) => {
     // Update user
     const updatedUser = await User.update(id, { username, email, fullName, role, isActive });
 
+    // A role change is the security-relevant edit, so it gets its own entry
+    // rather than hiding inside a generic "updated user".
+    if (role && role !== existingUser.role) {
+      logActivity(req, {
+        action: 'update',
+        entityType: 'user_role',
+        entityId: Number(id),
+        summary: `${existingUser.username}: ${existingUser.role} -> ${role}`,
+      });
+    } else {
+      logActivity(req, {
+        action: 'update',
+        entityType: 'user',
+        entityId: Number(id),
+        summary: updatedUser?.username || existingUser.username,
+      });
+    }
+
     res.json({
       message: 'User updated successfully',
       user: updatedUser
@@ -123,6 +149,13 @@ export const deleteUser = async (req, res) => {
 
     // Delete user
     await User.delete(id);
+
+    logActivity(req, {
+      action: 'delete',
+      entityType: 'user',
+      entityId: Number(id),
+      summary: user.username,
+    });
 
     res.json({ message: 'User deleted successfully' });
   } catch (error) {
@@ -156,6 +189,13 @@ export const resetUserPassword = async (req, res) => {
 
     // Update password
     await User.updatePassword(id, hashedPassword);
+
+    logActivity(req, {
+      action: 'update',
+      entityType: 'user_password',
+      entityId: Number(id),
+      summary: user?.username,
+    });
 
     res.json({ message: 'Password reset successfully' });
   } catch (error) {

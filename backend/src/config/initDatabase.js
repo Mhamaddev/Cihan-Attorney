@@ -108,6 +108,30 @@ const createTables = async () => {
       )
     `);
 
+    // Audit trail of who changed what. Read by admins only.
+    //
+    // actor_name is denormalised on purpose: the point of an audit trail is
+    // that it still reads correctly after the account is gone, so deleting a
+    // user nulls the reference but leaves the recorded name behind.
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS activity_log (
+        id SERIAL PRIMARY KEY,
+        actor_id INTEGER REFERENCES users(id) ON DELETE SET NULL,
+        actor_name VARCHAR(255) NOT NULL,
+        action VARCHAR(20) NOT NULL,
+        entity_type VARCHAR(30) NOT NULL,
+        entity_id INTEGER,
+        summary VARCHAR(255),
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `);
+
+    // The feed is always read newest-first and nothing else queries this table.
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_activity_log_created_at
+        ON activity_log (created_at DESC)
+    `);
+
     // Insert default admin user (password: admin123)
     // Password hash for 'admin123' using bcrypt
     await client.query(`
