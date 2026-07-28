@@ -128,3 +128,31 @@ export function deriveNotifications(
 export function badgeCount(seeds: NotificationSeed[], seen: Set<string>): number {
   return seeds.filter((n) => !seen.has(n.id) || alwaysCounts(n.kind)).length;
 }
+
+/** The stored action verbs, in the past tense the sentences are written in. */
+const ACTION_PAST: Record<string, string> = {
+  create: 'Created',
+  update: 'Updated',
+  delete: 'Deleted',
+};
+
+/**
+ * Builds the translation key for an audit entry: ('create', 'court_date')
+ * becomes 'actCreatedCourtDate'.
+ *
+ * Written as a lookup rather than by capitalising the stored verb, because
+ * those are present tense ('create') while the sentences read as past
+ * ('{actor} created ...') -- deriving the key directly produced
+ * 'actCreateCourtDate', which matches nothing and silently fell back to raw
+ * text on every row.
+ */
+export function activityKey(action: string, entityType: string): string {
+  const verb = ACTION_PAST[action];
+  if (!verb) return '';
+  const entity = entityType
+    .split('_')
+    .filter(Boolean)
+    .map((part) => part.charAt(0).toUpperCase() + part.slice(1))
+    .join('');
+  return `act${verb}${entity}`;
+}

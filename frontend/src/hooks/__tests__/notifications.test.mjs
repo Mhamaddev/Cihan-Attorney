@@ -8,7 +8,8 @@
  * Run:  node --experimental-strip-types src/hooks/__tests__/notifications.test.mjs
  *   or: npm run test:notifications
  */
-import { deriveNotifications, badgeCount, isUrgent } from '../notificationRules.ts';
+import { deriveNotifications, badgeCount, isUrgent, activityKey } from '../notificationRules.ts';
+import { translations } from '../../i18n/translations.ts';
 
 let failures = 0;
 
@@ -146,6 +147,43 @@ console.log('\nmalformed input\n');
   const todos = [{ id: 1, title: 'Bad date', due_date: 'garbage', is_completed: false }];
   const got = deriveNotifications(cases, todos, NOW);
   check('unparseable dates are dropped rather than crashing', got.length, 0);
+}
+
+// --- Activity keys resolve in every language ----------------------------
+console.log('\nactivity translation keys\n');
+{
+  check('past tense, not the stored verb', activityKey('create', 'case'), 'actCreatedCase');
+  check('snake_case entity becomes PascalCase', activityKey('create', 'court_date'), 'actCreatedCourtDate');
+  check('two-part entity', activityKey('update', 'user_password'), 'actUpdatedUserPassword');
+  check('unknown action yields no key', activityKey('frobnicate', 'case'), '');
+
+  // Every pair the server can write must have a sentence in all three
+  // languages, or that row silently renders as raw debug text.
+  const emitted = [
+    ['create', 'case'], ['update', 'case'], ['delete', 'case'],
+    ['create', 'court_date'], ['delete', 'court_date'],
+    ['create', 'expense'], ['delete', 'expense'],
+    ['create', 'file'], ['delete', 'file'],
+    ['create', 'user'], ['update', 'user'], ['delete', 'user'],
+    ['update', 'user_role'], ['update', 'user_password'],
+  ];
+
+  for (const lang of ['en', 'ku', 'ar']) {
+    const missing = emitted
+      .map(([a, e]) => activityKey(a, e))
+      .filter((k) => typeof translations[lang].topbar[k] !== 'string');
+    check(`every emitted action has a ${lang} sentence`, missing, []);
+  }
+
+  // The placeholders the renderer substitutes must actually be present.
+  const withId = ['actCreatedCase', 'actDeletedCase', 'actCreatedExpense', 'actCreatedFile'];
+  for (const lang of ['en', 'ku', 'ar']) {
+    const bad = withId.filter((k) => {
+      const s = translations[lang].topbar[k];
+      return !s.includes('{actor}') || !s.includes('{id}');
+    });
+    check(`${lang} case sentences carry {actor} and {id}`, bad, []);
+  }
 }
 
 console.log(failures === 0 ? '\nAll checks passed.' : `\n${failures} check(s) FAILED.`);

@@ -16,6 +16,7 @@ import { useLanguage } from '../i18n/LanguageContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { useAuth } from '../contexts/AuthContext';
 import { useNotifications, isUrgent } from '../hooks/useNotifications';
+import { activityKey } from '../hooks/notificationRules';
 import type { AppNotification } from '../hooks/useNotifications';
 
 interface TopbarProps {
@@ -30,7 +31,17 @@ function Topbar({ toggleSidebar }: TopbarProps) {
   const { language, setLanguage, t } = useLanguage();
   const { theme, toggleTheme } = useTheme();
   const { user, logout } = useAuth();
-  const { notifications, count, loading: notificationsLoading, reload, markAllSeen } = useNotifications();
+  const {
+    notifications, count, loading: notificationsLoading, reload, markAllSeen,
+    isAdmin, activity, newActivityCount, markActivitySeen, seenActivityId,
+  } = useNotifications();
+  const [panelTab, setPanelTab] = useState<'alerts' | 'activity'>('alerts');
+  // Frozen the moment the tab opens. Marking as seen happens immediately, so
+  // without this snapshot the rows would be highlighted for exactly one render.
+  const [activityMark, setActivityMark] = useState(0);
+  // Reading the clock during render is impure and makes output depend on when
+  // React happens to re-render. Sampled once per panel open instead.
+  const [nowMs, setNowMs] = useState(0);
   const navigate = useNavigate();
   const headerRef = useRef<HTMLElement>(null);
 
@@ -93,6 +104,34 @@ function Topbar({ toggleSidebar }: TopbarProps) {
 
   const urgent = notifications.filter(isUrgent);
   const upcoming = notifications.filter((n) => !isUrgent(n));
+
+  /** "Just now" / "12 min ago" / "3 h ago", then a plain date. */
+  const timeAgo = (iso: string) => {
+    const then = new Date(iso).getTime();
+    if (Number.isNaN(then) || !nowMs) return '';
+    const minutes = Math.floor((nowMs - then) / 60000);
+    if (minutes < 1) return t.topbar.justNow;
+    if (minutes < 60) return t.topbar.minutesAgo.replace('{n}', String(minutes));
+    const hours = Math.floor(minutes / 60);
+    if (hours < 24) return t.topbar.hoursAgo.replace('{n}', String(hours));
+    return new Date(iso).toLocaleDateString();
+  };
+
+  /**
+   * Audit rows are assembled from a per-action sentence rather than glued
+   * together from verb and noun, so each language keeps its own word order.
+   */
+  const activityText = (entry: { action: string; entity_type: string; actor_name: string; entity_id: number | null }) => {
+    const template = t.topbar[activityKey(entry.action, entry.entity_type) as keyof typeof t.topbar];
+    if (typeof template !== 'string') {
+      // An action added on the server before its translation exists must still
+      // render something readable rather than a blank row.
+      return `${entry.actor_name}: ${entry.action} ${entry.entity_type}`;
+    }
+    return template
+      .replace('{actor}', entry.actor_name)
+      .replace('{id}', String(entry.entity_id ?? ''));
+  };
 
   const renderNotification = (n: AppNotification) => {
     const { Icon, color, label } = notificationMeta(n.kind);
@@ -224,6 +263,8 @@ function Topbar({ toggleSidebar }: TopbarProps) {
                 // Refresh on open so the list is not whatever was true at page
                 // load, and treat opening as acknowledgement of what is there.
                 reload();
+                setPanelTab('alerts');
+                setNowMs(Date.now());
                 markAllSeen();
               }
               toggleMenu('notifications');
@@ -249,8 +290,61 @@ function Topbar({ toggleSidebar }: TopbarProps) {
               <div className="topbar-dropdown-header">
                 <h4>{t.topbar.notifications}</h4>
               </div>
+
+              {/* Only admins have an audit feed to switch to, so everyone else
+                  sees the alert list with no tab strip at all. */}
+              {isAdmin && (
+                <div className="notification-tabs" role="tablist">
+                  <button
+                    role="tab"
+                    aria-selected={panelTab === 'alerts'}
+                    className={`notification-tab${panelTab === 'alerts' ? ' is-active' : ''}`}
+                    onClick={() => setPanelTab('alerts')}
+                  >
+                    {t.topbar.tabAlerts}
+                    {count > 0 && <span className="notification-tab-count">{count}</span>}
+                  </button>
+                  <button
+                    role="tab"
+                    aria-selected={panelTab === 'activity'}
+                    className={`notification-tab${panelTab === 'activity' ? ' is-active' : ''}`}
+                    onClick={() => {
+                      setActivityMark(seenActivityId);
+                      setPanelTab('activity');
+                      setNowMs(Date.now());
+                      markActivitySeen();
+                    }}
+                  >
+                    {t.topbar.tabActivity}
+                    {newActivityCount > 0 && <span className="notification-tab-dot" />}
+                  </button>
+                </div>
+              )}
+
               <div className="topbar-dropdown-body notification-list">
-                {notifications.length === 0 ? (
+                {panelTab === 'activity' ? (
+                  activity.length === 0 ? (
+                    <div className="notification-empty">{t.topbar.noActivity}</div>
+                  ) : (
+                    activity.map((entry) => (
+                      <div
+                        key={entry.id}
+                        className={`activity-row${entry.id > activityMark ? ' is-new' : ''}`}
+                      >
+                        <span className={`activity-dot activity-dot--${entry.action}`} />
+                        <span className="notification-body">
+                          <span className="notification-title activity-text">
+                            {activityText(entry)}
+                          </span>
+                          <span className="notification-when">
+                            {timeAgo(entry.created_at)}
+                            {entry.summary ? ` · ${entry.summary}` : ''}
+                          </span>
+                        </span>
+                      </div>
+                    ))
+                  )
+                ) : notifications.length === 0 ? (
                   <div className="notification-empty">
                     {notificationsLoading ? t.common.loading : t.topbar.noNotifications}
                   </div>

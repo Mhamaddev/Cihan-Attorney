@@ -321,6 +321,30 @@ export const deleteFile = async (caseId: string | number, fileId: string | numbe
   return response.json();
 };
 
+// Activity log (admin only -- the server rejects anyone else with a 403)
+export interface ActivityEntry {
+  id: number;
+  actor_id: number | null;
+  actor_name: string;
+  action: 'create' | 'update' | 'delete';
+  entity_type: string;
+  entity_id: number | null;
+  summary: string | null;
+  created_at: string;
+}
+
+export const getActivity = (): Promise<ActivityEntry[]> =>
+  coalesce('activity', async () => {
+    const token = localStorage.getItem('token');
+    const response = await fetch(`${API_URL}/activity`, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    if (!response.ok) throw new Error('Failed to fetch activity');
+    return response.json();
+  });
+
 // Todos
 export const getTodos = (): Promise<Todo[]> =>
   coalesce('todos', async () => {

@@ -1,5 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { getAllCases, getTodos } from '../services/api';
+import { getAllCases, getTodos, getActivity } from '../services/api';
+import type { ActivityEntry } from '../services/api';
+import { useAuth } from '../contexts/AuthContext';
 import { deriveNotifications, badgeCount } from './notificationRules';
 import type { NotificationSeed } from './notificationRules';
 
@@ -24,6 +26,8 @@ export interface AppNotification extends NotificationSeed {
 const POLL_INTERVAL_MS = 5 * 60 * 1000;
 
 const SEEN_STORAGE_KEY = 'seenNotifications';
+/** Activity is acknowledged by its highest id, not by listing every entry. */
+const ACTIVITY_SEEN_KEY = 'seenActivityId';
 
 function readSeen(): string[] {
   try {
@@ -44,9 +48,17 @@ function writeSeen(ids: string[]) {
   }
 }
 
+function readSeenActivityId(): number {
+  const raw = Number(localStorage.getItem(ACTIVITY_SEEN_KEY));
+  return Number.isFinite(raw) ? raw : 0;
+}
+
 export function useNotifications() {
+  const { isAdmin } = useAuth();
   const [items, setItems] = useState<NotificationSeed[]>([]);
   const [seen, setSeen] = useState<string[]>(readSeen);
+  const [activity, setActivity] = useState<ActivityEntry[]>([]);
+  const [seenActivityId, setSeenActivityId] = useState<number>(readSeenActivityId);
   const [loading, setLoading] = useState(true);
   // Avoids a setState on an unmounted component if a poll lands after teardown.
   const alive = useRef(true);
@@ -78,7 +90,19 @@ export function useNotifications() {
     } finally {
       if (alive.current) setLoading(false);
     }
-  }, []);
+
+    // Separate request, and separate try: the audit feed is admin-only and the
+    // server answers everyone else with a 403. A non-admin must still get their
+    // deadline alerts, so a rejection here cannot be allowed to abort the load
+    // above -- which is why it is not part of the same Promise.all.
+    if (!isAdmin) return;
+    try {
+      const entries = await getActivity();
+      if (alive.current) setActivity(entries);
+    } catch {
+      // Keep the last known feed.
+    }
+  }, [isAdmin]);
 
   useEffect(() => {
     alive.current = true;
@@ -108,7 +132,7 @@ export function useNotifications() {
 
   const count = useMemo(() => badgeCount(items, new Set(seen)), [items, seen]);
 
-  /** Called when the panel opens: everything on screen has now been seen. */
+  /** Called when the Alerts panel opens: everything in it has now been seen. */
   const markAllSeen = useCallback(() => {
     setSeen((prev) => {
       const merged = Array.from(new Set([...prev, ...latestItems.current.map((n) => n.id)]));
@@ -117,5 +141,38 @@ export function useNotifications() {
     });
   }, []);
 
-  return { notifications, count, loading, reload: load, markAllSeen };
+  /**
+   * Activity ids only ever increase, so "seen up to id N" captures the whole
+   * feed in one number -- no growing list, and entries that age out of the
+   * fifty most recent cannot come back as unread.
+   */
+  const newActivityCount = useMemo(
+    () => activity.filter((a) => a.id > seenActivityId).length,
+    [activity, seenActivityId]
+  );
+
+  const markActivitySeen = useCallback(() => {
+    const highest = activity.reduce((max, a) => Math.max(max, a.id), seenActivityId);
+    setSeenActivityId(highest);
+    try {
+      localStorage.setItem(ACTIVITY_SEEN_KEY, String(highest));
+    } catch {
+      // Storage being unavailable just means the dot reappears next session.
+    }
+  }, [activity, seenActivityId]);
+
+  return {
+    notifications,
+    count,
+    loading,
+    reload: load,
+    markAllSeen,
+    isAdmin,
+    activity,
+    newActivityCount,
+    markActivitySeen,
+    /** Exposed so the panel can snapshot it before marking, and still
+        highlight the rows that were new when the tab was opened. */
+    seenActivityId,
+  };
 }
